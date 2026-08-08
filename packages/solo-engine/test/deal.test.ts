@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import { cardId, createDeck, DECK_SIZE } from '../src/card.js'
-import { dealHands, shuffle } from '../src/deal.js'
-import { mulberry32 } from '../src/rng.js'
+import { cardId, createDeck, DECK_SIZE } from '../src/card'
+import { dealHands, shuffle } from '../src/deal'
+import { mulberry32 } from '../src/rng'
 
 describe('山札', () => {
   it('20 枚である', () => {

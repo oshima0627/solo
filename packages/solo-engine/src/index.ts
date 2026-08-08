@@ -1,4 +1,4 @@
-export type { Card, Rank, Suit } from './card.js'
+export type { Card, Rank, Suit } from './card'
 export {
   RANKS,
   SUITS,
@@ -11,21 +11,21 @@ export {
   cardId,
   formatCard,
   isSameCard,
-} from './card.js'
+} from './card'
 
-export type { Rng } from './rng.js'
-export { mulberry32, defaultRng } from './rng.js'
+export type { Rng } from './rng'
+export { mulberry32, defaultRng } from './rng'
 
-export type { RuleVariant } from './rules.js'
+export type { RuleVariant } from './rules'
 export {
   DEFAULT_RULES,
   STANDARD_PIN_RANKS,
   ALL_PIN_RANKS,
   soloOrder,
   withRules,
-} from './rules.js'
+} from './rules'
 
-export type { Hand, HandCategory } from './hand.js'
+export type { Hand, HandCategory } from './hand'
 export {
   SCORE_BASE,
   evaluateHand,
@@ -33,12 +33,12 @@ export {
   isBomb,
   isFlow,
   formatHand,
-} from './hand.js'
+} from './hand'
 
-export type { ShowdownEntry, ShowdownResult } from './showdown.js'
-export { resolveShowdown, isCarryOver } from './showdown.js'
+export type { ShowdownEntry, ShowdownResult } from './showdown'
+export { resolveShowdown, isCarryOver } from './showdown'
 
-export type { DealtHands } from './deal.js'
-export { shuffle, dealHands } from './deal.js'
+export type { DealtHands } from './deal'
+export { shuffle, dealHands } from './deal'
 
-export * from './game/index.js'
+export * from './game/index'

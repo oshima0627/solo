@@ -1,6 +1,6 @@
-import type { Card } from './card.js'
-import { createDeck, DECK_SIZE, HAND_SIZE, MAX_PLAYERS, MIN_PLAYERS } from './card.js'
-import type { Rng } from './rng.js'
+import type { Card } from './card'
+import { createDeck, DECK_SIZE, HAND_SIZE, MAX_PLAYERS, MIN_PLAYERS } from './card'
+import type { Rng } from './rng'
 
 /** Fisher-Yates。元の配列は破壊しない */
 export function shuffle<T>(items: readonly T[], rng: Rng): T[] {

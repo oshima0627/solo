@@ -1,4 +1,4 @@
-import type { Rank } from './card.js'
+import type { Rank } from './card'
 
 /**
  * ソロには公式ルールが存在せず、証言によって内容が割れている箇所がある。

@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import type { HandCategory } from '../src/hand.js'
-import { evaluateHand } from '../src/hand.js'
-import { ALL_PIN_RANKS, DEFAULT_RULES, withRules } from '../src/rules.js'
-import type { RuleVariant } from '../src/rules.js'
-import { allHandCombinations } from './helpers.js'
+import type { HandCategory } from '../src/hand'
+import { evaluateHand } from '../src/hand'
+import { ALL_PIN_RANKS, DEFAULT_RULES, withRules } from '../src/rules'
+import type { RuleVariant } from '../src/rules'
+import { allHandCombinations } from './helpers'
 
 /**
  * 山札 20 枚から 2 枚を選ぶ組み合わせは C(20,2) = 190 通りしかないため、

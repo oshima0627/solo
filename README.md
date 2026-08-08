@@ -19,11 +19,32 @@
 |---|---|
 | [要件定義書](./docs/requirements.md) | アプリの仕様・ルールバリアント・画面設計・実装方針 |
 | [調査記録](./docs/research.md) | ゲームのルール・起源・出典の調査結果 |
+| [公開手順](./docs/deploy.md) | Cloudflare へのデプロイ方法 |
+
+## 構成
+
+```
+packages/solo-engine   ルールエンジン（純粋TypeScript・依存ゼロ）
+apps/web               Next.js アプリ
+```
+
+ルールエンジンを独立させているため、役判定と勝敗判定は UI から切り離してテストできます。
+
+## 開発
+
+```bash
+npm install
+npm run dev        # 開発サーバー
+npm test           # エンジンのテスト（103件）
+npm run typecheck
+npm run build      # apps/web/out へ静的書き出し
+```
 
 ## 技術構成
 
 - Next.js (App Router) + TypeScript + Tailwind CSS
 - バックエンドなし（完全クライアント完結・オフライン動作）
+- 状態は `localStorage` にのみ保存し、外部へは送信しません
 
 ## 注意
 

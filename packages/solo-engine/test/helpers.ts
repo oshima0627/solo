@@ -1,5 +1,5 @@
-import type { Card, Rank, Suit } from '../src/card.js'
-import { createDeck } from '../src/card.js'
+import type { Card, Rank, Suit } from '../src/card'
+import { createDeck } from '../src/card'
 
 /** 山札 20 枚から 2 枚を選ぶ組み合わせ全 190 通り */
 export function allHandCombinations(): [Card, Card][] {

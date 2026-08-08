@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { availableActions, callAmount, currentPlayerId, maxRaise } from '../src/game/selectors.js'
-import { act, CALL, FOLD, PLAY, raise, setup, start } from './gameHelpers.js'
+import { availableActions, callAmount, currentPlayerId, maxRaise } from '../src/game/selectors'
+import { act, CALL, FOLD, PLAY, raise, setup, start } from './gameHelpers'
 
 const RAISE_MODE = { bettingMode: 'RAISE' } as const
 

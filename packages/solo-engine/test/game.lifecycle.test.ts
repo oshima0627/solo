@@ -1,16 +1,16 @@
 import { describe, expect, it } from 'vitest'
-import { mulberry32 } from '../src/rng.js'
-import { DEFAULT_RULES } from '../src/rules.js'
-import { createGame, eligiblePlayers, reduce } from '../src/game/reducer.js'
+import { mulberry32 } from '../src/rng'
+import { DEFAULT_RULES } from '../src/rules'
+import { createGame, eligiblePlayers, reduce } from '../src/game/reducer'
 import {
   availableActions,
   currentPlayerId,
   dealForRound,
   handOf,
   standings,
-} from '../src/game/selectors.js'
-import type { GameConfig, GameState, PlayerAction } from '../src/game/types.js'
-import { act, FOLD, PLAY, setup, start } from './gameHelpers.js'
+} from '../src/game/selectors'
+import type { GameConfig, GameState, PlayerAction } from '../src/game/types'
+import { act, FOLD, PLAY, setup, start } from './gameHelpers'
 
 describe('設定の検証', () => {
   const base: GameConfig = {

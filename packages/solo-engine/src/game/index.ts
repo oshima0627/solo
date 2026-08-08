@@ -12,11 +12,11 @@ export type {
   RoundOutcome,
   RoundResult,
   RoundState,
-} from './types.js'
+} from './types'
 
-export { createGame, reduce, eligiblePlayers } from './reducer.js'
+export { createGame, reduce, eligiblePlayers } from './reducer'
 
-export type { Standing } from './selectors.js'
+export type { Standing } from './selectors'
 export {
   currentPlayerId,
   playerName,
@@ -28,4 +28,4 @@ export {
   availableActions,
   standings,
   dealForRound,
-} from './selectors.js'
+} from './selectors'

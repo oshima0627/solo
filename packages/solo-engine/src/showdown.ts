@@ -1,5 +1,5 @@
-import type { Hand } from './hand.js'
-import { isBomb, isFlow } from './hand.js'
+import type { Hand } from './hand'
+import { isBomb, isFlow } from './hand'
 
 export interface ShowdownEntry<Id extends string = string> {
   readonly playerId: Id

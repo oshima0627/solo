@@ -1,12 +1,12 @@
-import type { Card, Rank, Suit } from '../src/card.js'
-import { DEFAULT_RULES } from '../src/rules.js'
-import { createGame, reduce } from '../src/game/reducer.js'
+import type { Card, Rank, Suit } from '../src/card'
+import { DEFAULT_RULES } from '../src/rules'
+import { createGame, reduce } from '../src/game/reducer'
 import type {
   GameConfig,
   GameState,
   PlayerAction,
   PlayerId,
-} from '../src/game/types.js'
+} from '../src/game/types'
 
 /**
  * ランクの組み合わせから手札を組み立てる。

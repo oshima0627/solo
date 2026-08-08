@@ -1,7 +1,7 @@
-import type { Card } from '../card.js'
-import { MAX_PLAYERS, MIN_PLAYERS } from '../card.js'
-import { evaluateHand, isFlow } from '../hand.js'
-import { resolveShowdown, type ShowdownEntry } from '../showdown.js'
+import type { Card } from '../card'
+import { MAX_PLAYERS, MIN_PLAYERS } from '../card'
+import { evaluateHand, isFlow } from '../hand'
+import { resolveShowdown, type ShowdownEntry } from '../showdown'
 import type {
   GameConfig,
   GameEvent,
@@ -12,7 +12,7 @@ import type {
   RoundOutcome,
   RoundResult,
   RoundState,
-} from './types.js'
+} from './types'
 
 type Hands = Readonly<Record<PlayerId, readonly [Card, Card]>>
 

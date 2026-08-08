@@ -1,6 +1,6 @@
-import type { Card } from '../card.js'
-import type { RuleVariant } from '../rules.js'
-import type { ShowdownResult } from '../showdown.js'
+import type { Card } from '../card'
+import type { RuleVariant } from '../rules'
+import type { ShowdownResult } from '../showdown'
 
 export type PlayerId = string
 

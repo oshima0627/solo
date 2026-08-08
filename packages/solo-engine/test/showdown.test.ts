@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import { evaluateHand } from '../src/hand.js'
-import { DEFAULT_RULES } from '../src/rules.js'
-import { isCarryOver, resolveShowdown, type ShowdownEntry } from '../src/showdown.js'
-import { hand } from './helpers.js'
-import type { Rank, Suit } from '../src/card.js'
+import { evaluateHand } from '../src/hand'
+import { DEFAULT_RULES } from '../src/rules'
+import { isCarryOver, resolveShowdown, type ShowdownEntry } from '../src/showdown'
+import { hand } from './helpers'
+import type { Rank, Suit } from '../src/card'
 
 const R = DEFAULT_RULES
 

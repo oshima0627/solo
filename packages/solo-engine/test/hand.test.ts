@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import { evaluateHand, compareHands, isBomb, isFlow, formatHand } from '../src/hand.js'
-import { ALL_PIN_RANKS, DEFAULT_RULES, withRules } from '../src/rules.js'
-import { hand } from './helpers.js'
+import { evaluateHand, compareHands, isBomb, isFlow, formatHand } from '../src/hand'
+import { ALL_PIN_RANKS, DEFAULT_RULES, withRules } from '../src/rules'
+import { hand } from './helpers'
 
 const R = DEFAULT_RULES
 

@@ -1,6 +1,6 @@
-import type { Card, Rank } from './card.js'
-import { formatCard } from './card.js'
-import { soloOrder, type RuleVariant } from './rules.js'
+import type { Card, Rank } from './card'
+import { formatCard } from './card'
+import { soloOrder, type RuleVariant } from './rules'
 
 /**
  * 手札 2 枚の役。

@@ -1,10 +1,10 @@
-import type { Card } from '../card.js'
-import type { Hand } from '../hand.js'
-import { evaluateHand } from '../hand.js'
-import type { Rng } from '../rng.js'
-import { dealHands } from '../deal.js'
-import { eligiblePlayers } from './reducer.js'
-import type { GameEvent, GameState, PlayerAction, PlayerId } from './types.js'
+import type { Card } from '../card'
+import type { Hand } from '../hand'
+import { evaluateHand } from '../hand'
+import type { Rng } from '../rng'
+import { dealHands } from '../deal'
+import { eligiblePlayers } from './reducer'
+import type { GameEvent, GameState, PlayerAction, PlayerId } from './types'
 
 /** 手番のプレイヤー。入力待ちでなければ null */
 export function currentPlayerId(state: GameState): PlayerId | null {

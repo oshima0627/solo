@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import { reduce } from '../src/game/reducer.js'
-import { currentPlayerId } from '../src/game/selectors.js'
-import { act, FOLD, PLAY, setup, start } from './gameHelpers.js'
+import { reduce } from '../src/game/reducer'
+import { currentPlayerId } from '../src/game/selectors'
+import { act, FOLD, PLAY, setup, start } from './gameHelpers'
 
 describe('アンティ方式：基本の 1 周', () => {
   it('場代を徴収して DECIDE に入る', () => {

@@ -8,6 +8,9 @@
     "apps/*"
   ],
   "scripts": {
+    "dev": "npm run dev -w @solo/web",
+    "build": "npm run build -w @solo/web",
+    "deploy": "npm run deploy -w @solo/web",
     "test": "npm run test --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present"
   }
