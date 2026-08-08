@@ -11,7 +11,7 @@ import {
   type EndCondition,
   type GameConfig,
 } from '@solo/engine'
-import { Button, Field, NumberInput, Panel, Screen, Segmented, Toggle } from './ui'
+import { Button, Field, Screen, SectionHead, Segmented, Stepper, Toggle } from './ui'
 
 type EndType = EndCondition['type']
 
@@ -79,137 +79,134 @@ export function SetupScreen({
     })
   }
 
+  const input =
+    'w-full border-b border-rule bg-transparent py-2.5 text-base outline-none transition-colors focus:border-vermilion'
+
   return (
     <Screen>
-      <header className="flex items-center gap-3">
-        <button
-          type="button"
-          onClick={onBack}
-          className="rounded-lg px-2 py-1 text-sm text-foam-300"
-        >
-          ← 戻る
+      <header className="flex items-baseline justify-between border-b border-rule pb-3">
+        <h1 className="text-sm font-bold tracking-[0.1em]">ゲーム設定</h1>
+        <button type="button" onClick={onBack} className="text-sm text-ink-soft underline underline-offset-4">
+          戻る
         </button>
-        <h1 className="text-xl font-bold">ゲーム設定</h1>
       </header>
 
-      <div className="flex-1 space-y-4 overflow-y-auto pb-4">
-        <Panel className="space-y-3">
-          <Field
-            label="遊び方"
-            hint={
-              mode === 'PASS'
-                ? '1台の端末を回して、その場にいる人と遊びます。'
-                : 'CPU を相手に1人で遊びます。ルールを覚えるのにも使えます。'
-            }
-          >
-            <Segmented
-              value={mode}
-              onChange={setMode}
-              options={[
-                { value: 'PASS', label: 'みんなで' },
-                { value: 'SOLO', label: 'ひとり練習' },
-              ]}
-            />
-          </Field>
-        </Panel>
+      <div className="flex-1 space-y-9 overflow-y-auto">
+        <section className="space-y-4">
+          <SectionHead index="01">遊び方</SectionHead>
+          <Segmented
+            value={mode}
+            onChange={setMode}
+            options={[
+              { value: 'PASS', label: 'みんなで' },
+              { value: 'SOLO', label: 'ひとり練習' },
+            ]}
+          />
+          <p className="text-xs leading-relaxed text-ink-soft">
+            {mode === 'PASS'
+              ? '1台の端末を回して、その場にいる人と遊びます。'
+              : 'CPUを相手に1人で遊びます。ルールを覚えるのにも使えます。'}
+          </p>
 
-        <Panel className="space-y-4">
-          <Field label={mode === 'SOLO' ? '人数（自分＋CPU）' : '人数'}>
-            <NumberInput
+          <Field label={mode === 'SOLO' ? '人数（自分とCPU）' : '人数'}>
+            <Stepper
               value={playerCount}
               min={MIN_PLAYERS}
               max={MAX_PLAYERS}
               onChange={setPlayerCount}
             />
           </Field>
-          <div className="space-y-2">
+
+          <div className="space-y-1">
             {Array.from({ length: mode === 'SOLO' ? 1 : playerCount }, (_, i) => (
-              <input
-                key={i}
-                value={names[i] ?? ''}
-                onChange={(e) => setName(i, e.target.value)}
-                maxLength={12}
-                aria-label={`${i + 1}人目の名前`}
-                className="w-full rounded-xl bg-sea-800 px-4 py-3 text-base outline-none focus:ring-2 focus:ring-coral-500"
-              />
+              <div key={i} className="flex items-baseline gap-3">
+                <span className="label tnum w-5 shrink-0">{String(i + 1).padStart(2, '0')}</span>
+                <input
+                  value={names[i] ?? ''}
+                  onChange={(e) => setName(i, e.target.value)}
+                  maxLength={12}
+                  aria-label={`${i + 1}人目の名前`}
+                  className={input}
+                />
+              </div>
             ))}
             {mode === 'SOLO' ? (
-              <p className="text-xs text-foam-500">
-                相手は CPU 1 〜 CPU {playerCount - 1} になります
+              <p className="pt-2 text-xs text-ink-soft">
+                相手は CPU 1 から CPU {playerCount - 1} になります
               </p>
             ) : null}
           </div>
-        </Panel>
+        </section>
 
-        <Panel className="space-y-3">
-          <Field
-            label="ベット方式"
-            hint={
-              bettingMode === 'ANTE'
-                ? '端末が必ず1周して決着します。速くて気軽。'
-                : 'レイズのたびに端末が周回します。ブラフが効きます。'
-            }
-          >
-            <Segmented
-              value={bettingMode}
-              onChange={setBettingMode}
-              options={[
-                { value: 'ANTE', label: 'アンティ（1周）' },
-                { value: 'RAISE', label: 'レイズ（周回）' },
-              ]}
-            />
-          </Field>
-        </Panel>
+        <section className="space-y-4">
+          <SectionHead index="02">ベット方式</SectionHead>
+          <Segmented
+            value={bettingMode}
+            onChange={setBettingMode}
+            options={[
+              { value: 'ANTE', label: 'アンティ' },
+              { value: 'RAISE', label: 'レイズ' },
+            ]}
+          />
+          <p className="text-xs leading-relaxed text-ink-soft">
+            {bettingMode === 'ANTE'
+              ? '端末が必ず1周して決着します。速くて気軽。'
+              : 'レイズのたびに端末が周回します。降りても手札は公開されないので、ブラフが効きます。'}
+          </p>
+        </section>
 
-        <Panel className="space-y-3">
-          <Field label="終了条件">
-            <Segmented
-              value={endType}
-              onChange={setEndType}
-              options={[
-                { value: 'ROUNDS', label: 'ラウンド数' },
-                { value: 'BANKRUPT', label: '破産まで' },
-                { value: 'FREE', label: 'フリー' },
-              ]}
-            />
-          </Field>
+        <section className="space-y-5">
+          <SectionHead index="03">勝負の区切り</SectionHead>
+          <Segmented
+            value={endType}
+            onChange={setEndType}
+            options={[
+              { value: 'ROUNDS', label: '局数' },
+              { value: 'BANKRUPT', label: '破産まで' },
+              { value: 'FREE', label: 'フリー' },
+            ]}
+          />
           {endType === 'ROUNDS' ? (
-            <Field label="ラウンド数">
-              <NumberInput value={rounds} min={1} max={50} onChange={setRounds} />
+            <Field label="局数">
+              <Stepper value={rounds} min={1} max={50} onChange={setRounds} />
             </Field>
           ) : null}
           <Field label="初期チップ">
-            <NumberInput value={initialChips} min={5} max={500} step={5} onChange={setInitialChips} />
+            <Stepper value={initialChips} min={5} max={500} step={5} onChange={setInitialChips} />
           </Field>
           <Field label="場代">
-            <NumberInput value={anteAmount} min={1} max={10} onChange={setAnteAmount} />
+            <Stepper value={anteAmount} min={1} max={10} onChange={setAnteAmount} />
           </Field>
-        </Panel>
+        </section>
 
-        <Panel className="space-y-3">
+        <section className="space-y-4">
           <button
             type="button"
             onClick={() => setShowRules((v) => !v)}
-            className="flex w-full items-center justify-between text-left"
+            className="flex w-full items-baseline justify-between border-b border-rule pb-2 text-left"
           >
-            <span className="text-sm font-bold text-foam-300">ローカルルール</span>
-            <span className="text-foam-500">{showRules ? '閉じる' : '開く'}</span>
+            <span className="flex items-baseline gap-3">
+              <span className="label tnum">04</span>
+              <span className="text-sm font-bold tracking-[0.1em]">ローカルルール</span>
+            </span>
+            <span className="text-sm text-ink-soft">{showRules ? '閉じる' : '開く'}</span>
           </button>
+
           {showRules ? (
-            <div className="space-y-2">
-              <p className="text-xs leading-relaxed text-foam-500">
+            <div className="space-y-1">
+              <p className="pb-2 text-xs leading-relaxed text-ink-soft">
                 ソロには公式ルールがなく、地域やグループごとに証言が分かれています。
                 割れている箇所はここで切り替えられます。
               </p>
               <Toggle
                 label="バクダンで山札を入れ替える"
-                hint="♠♣ の20枚と ♥♦ の20枚を持ち替える。確率や役の強さは変わりません"
+                hint="♠♣の20枚と♥♦の20枚を持ち替える。確率や役の強さは変わりません"
                 checked={swapDeckOnBomb}
                 onChange={setSwapDeckOnBomb}
               />
               <Toggle
                 label="ピンゾロを2番目に強くする"
-                hint="既定ではソロの中で最弱（多数派の証言）"
+                hint="既定ではソロの中で最弱。多数派の証言に合わせています"
                 checked={highPinzoro}
                 onChange={setHighPinzoro}
               />
@@ -231,17 +228,19 @@ export function SetupScreen({
                 checked={shiroku}
                 onChange={setShiroku}
               />
-              <Field label="バクダンの追加徴収">
-                <NumberInput
-                  value={bombExtraCharge}
-                  min={0}
-                  max={20}
-                  onChange={setBombExtraCharge}
-                />
-              </Field>
+              <div className="pt-4">
+                <Field label="バクダンの追加徴収">
+                  <Stepper
+                    value={bombExtraCharge}
+                    min={0}
+                    max={20}
+                    onChange={setBombExtraCharge}
+                  />
+                </Field>
+              </div>
             </div>
           ) : null}
-        </Panel>
+        </section>
       </div>
 
       <Button onClick={submit}>はじめる</Button>

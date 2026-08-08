@@ -2,13 +2,12 @@
 
 import { useId, type ButtonHTMLAttributes, type ReactNode } from 'react'
 
-type Variant = 'primary' | 'secondary' | 'ghost' | 'danger'
+type Variant = 'primary' | 'secondary' | 'quiet'
 
 const VARIANTS: Record<Variant, string> = {
-  primary: 'bg-coral-500 text-white active:bg-coral-400 disabled:bg-sea-700',
-  secondary: 'bg-sea-700 text-foam-100 active:bg-sea-600 disabled:opacity-40',
-  ghost: 'bg-transparent text-foam-300 border border-sea-700 active:bg-sea-800',
-  danger: 'bg-sea-800 text-foam-300 border border-sea-600 active:bg-sea-700',
+  primary: 'bg-vermilion text-paper-raised active:bg-vermilion-deep disabled:bg-rule-strong',
+  secondary: 'bg-ink text-paper-raised active:bg-ink-soft disabled:bg-rule-strong',
+  quiet: 'border border-rule-strong text-ink active:bg-paper-sunk',
 }
 
 export function Button({
@@ -19,38 +18,50 @@ export function Button({
   return (
     <button
       {...props}
-      className={`w-full rounded-2xl px-5 py-4 text-lg font-bold transition-colors disabled:cursor-not-allowed ${VARIANTS[variant]} ${className}`}
+      className={`w-full rounded-sm px-5 py-4 text-base font-bold tracking-[0.08em] transition-colors disabled:cursor-not-allowed ${VARIANTS[variant]} ${className}`}
     />
   )
 }
 
-export function Panel({ children, className = '' }: { children: ReactNode; className?: string }) {
+/** 章番号つきの小見出し。罫線で区切る */
+export function SectionHead({ index, children }: { index: string; children: ReactNode }) {
   return (
-    <div className={`rounded-2xl border border-sea-700 bg-sea-900 p-4 ${className}`}>
-      {children}
+    <div className="flex items-baseline gap-3 border-b border-rule pb-2">
+      <span className="label tnum">{index}</span>
+      <h2 className="text-sm font-bold tracking-[0.1em]">{children}</h2>
     </div>
   )
 }
 
 /**
  * 見出し付きのまとまり。
- * 中身が複数のボタン（Segmented / NumberInput）になることがあるため、
- * label 要素では包まない。label で包むと見出しのクリックが
- * 最初のボタンの操作として扱われてしまう。
+ * 中身が複数のボタンになることがあるため label 要素では包まない。
+ * label で包むと見出しのクリックが最初のボタンの操作として扱われてしまう。
  */
-export function Field({ label, hint, children }: { label: string; hint?: string; children: ReactNode }) {
+export function Field({
+  label,
+  hint,
+  children,
+}: {
+  label: string
+  hint?: string
+  children: ReactNode
+}) {
   const labelId = useId()
   return (
-    <div role="group" aria-labelledby={labelId} className="space-y-2">
-      <span id={labelId} className="block text-sm font-bold text-foam-300">
+    <div role="group" aria-labelledby={labelId} className="space-y-2.5">
+      <span id={labelId} className="label block">
         {label}
       </span>
       {children}
-      {hint ? <span className="block text-xs leading-relaxed text-foam-500">{hint}</span> : null}
+      {hint ? (
+        <p className="text-xs leading-relaxed text-ink-soft">{hint}</p>
+      ) : null}
     </div>
   )
 }
 
+/** 下線で選択を示すタブ。塗りつぶしのピルは使わない */
 export function Segmented<T extends string>({
   value,
   options,
@@ -61,20 +72,25 @@ export function Segmented<T extends string>({
   onChange: (value: T) => void
 }) {
   return (
-    <div className="flex gap-1 rounded-xl bg-sea-800 p-1">
-      {options.map((option) => (
-        <button
-          key={option.value}
-          type="button"
-          onClick={() => onChange(option.value)}
-          aria-pressed={value === option.value}
-          className={`flex-1 rounded-lg px-2 py-2.5 text-sm font-bold transition-colors ${
-            value === option.value ? 'bg-coral-500 text-white' : 'text-foam-300'
-          }`}
-        >
-          {option.label}
-        </button>
-      ))}
+    <div className="flex border-b border-rule">
+      {options.map((option) => {
+        const active = value === option.value
+        return (
+          <button
+            key={option.value}
+            type="button"
+            onClick={() => onChange(option.value)}
+            aria-pressed={active}
+            className={`-mb-px flex-1 border-b-2 px-1 py-3 text-sm transition-colors ${
+              active
+                ? 'border-vermilion font-bold text-ink'
+                : 'border-transparent text-ink-faint'
+            }`}
+          >
+            {option.label}
+          </button>
+        )
+      })}
     </div>
   )
 }
@@ -96,19 +112,19 @@ export function Toggle({
       role="switch"
       aria-checked={checked}
       onClick={() => onChange(!checked)}
-      className="flex w-full items-center justify-between gap-3 rounded-xl bg-sea-800 px-4 py-3 text-left"
+      className="flex w-full items-start justify-between gap-4 border-b border-rule py-3.5 text-left"
     >
-      <span>
-        <span className="block text-sm font-bold text-foam-100">{label}</span>
-        {hint ? <span className="block text-xs text-foam-500">{hint}</span> : null}
+      <span className="min-w-0">
+        <span className="block text-sm font-bold">{label}</span>
+        {hint ? <span className="mt-1 block text-xs text-ink-soft">{hint}</span> : null}
       </span>
       <span
-        className={`relative h-7 w-12 shrink-0 rounded-full transition-colors ${
-          checked ? 'bg-jade-400' : 'bg-sea-600'
+        className={`relative mt-0.5 h-6 w-11 shrink-0 rounded-full border transition-colors ${
+          checked ? 'border-vermilion bg-vermilion' : 'border-rule-strong bg-paper-sunk'
         }`}
       >
         <span
-          className={`absolute top-1 h-5 w-5 rounded-full bg-white transition-all ${
+          className={`absolute top-1/2 h-4 w-4 -translate-y-1/2 rounded-full bg-paper-raised transition-all ${
             checked ? 'left-6' : 'left-1'
           }`}
         />
@@ -117,7 +133,7 @@ export function Toggle({
   )
 }
 
-export function NumberInput({
+export function Stepper({
   value,
   min,
   max,
@@ -131,26 +147,27 @@ export function NumberInput({
   onChange: (value: number) => void
 }) {
   const clamp = (n: number) => Math.min(max, Math.max(min, n))
+  const arrow =
+    'flex h-11 w-11 shrink-0 items-center justify-center border border-rule-strong text-lg text-ink transition-colors active:bg-paper-sunk disabled:border-rule disabled:text-rule-strong'
+
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-4">
       <button
         type="button"
         aria-label="減らす"
         onClick={() => onChange(clamp(value - step))}
         disabled={value <= min}
-        className="h-12 w-12 shrink-0 rounded-xl bg-sea-700 text-2xl font-bold disabled:opacity-30"
+        className={`${arrow} rounded-sm`}
       >
         −
       </button>
-      <div className="flex-1 rounded-xl bg-sea-800 py-3 text-center text-xl font-bold tabular-nums">
-        {value}
-      </div>
+      <span className="tnum flex-1 text-center font-serif text-3xl leading-none">{value}</span>
       <button
         type="button"
         aria-label="増やす"
         onClick={() => onChange(clamp(value + step))}
         disabled={value >= max}
-        className="h-12 w-12 shrink-0 rounded-xl bg-sea-700 text-2xl font-bold disabled:opacity-30"
+        className={`${arrow} rounded-sm`}
       >
         ＋
       </button>
@@ -158,6 +175,16 @@ export function NumberInput({
   )
 }
 
+/** 局数・場・チップなど、横並びの小さな数値表示 */
+export function Stat({ label, value }: { label: string; value: ReactNode }) {
+  return (
+    <div className="min-w-0">
+      <span className="label block">{label}</span>
+      <span className="tnum mt-1 block truncate text-base font-bold">{value}</span>
+    </div>
+  )
+}
+
 export function Screen({ children }: { children: ReactNode }) {
-  return <div className="flex min-h-dvh flex-col gap-4 p-4">{children}</div>
+  return <div className="flex min-h-dvh flex-col gap-6 px-5 pb-7 pt-6">{children}</div>
 }

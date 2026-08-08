@@ -4,9 +4,7 @@ import { useEffect } from 'react'
 import { standings, type GameState } from '@solo/engine'
 import { playCue } from '@/lib/sound'
 import { SoundToggle } from './SoundToggle'
-import { Button, Panel, Screen } from './ui'
-
-const MEDAL = ['🥇', '🥈', '🥉']
+import { Button, Screen } from './ui'
 
 export function EndScreen({ game, onRestart }: { game: GameState; onRestart: () => void }) {
   const rows = standings(game)
@@ -15,36 +13,46 @@ export function EndScreen({ game, onRestart }: { game: GameState; onRestart: () 
 
   return (
     <Screen>
-      <header className="relative text-center">
-        <SoundToggle className="absolute right-0 top-0" />
-        <p className="text-sm text-foam-500">全 {game.roundNo} 局</p>
-        <h1 className="mt-1 animate-pop text-3xl font-black">結果</h1>
+      <header className="flex items-baseline justify-between border-b border-rule pb-3">
+        <span className="label tnum">全 {game.roundNo} 局</span>
+        <SoundToggle className="-mr-1.5" />
       </header>
 
-      <div className="flex-1 space-y-3 overflow-y-auto">
+      <div className="animate-rise">
+        <h1 className="font-serif text-6xl leading-none">結果</h1>
+        <div className="mt-5 h-px w-16 bg-vermilion" />
+      </div>
+
+      <div className="flex-1 overflow-y-auto">
         {rows.map((row) => {
-          const start = game.config.initialChips
-          const diff = row.chips - start
+          const diff = row.chips - game.config.initialChips
+          const top = row.rank === 1
           return (
-            <Panel
+            <div
               key={row.playerId}
-              className={`flex items-center gap-4 ${row.rank === 1 ? 'border-gold-400' : ''}`}
+              className="flex items-baseline gap-4 border-b border-rule py-4 first:border-t"
             >
-              <span className="w-8 text-center text-2xl">
-                {MEDAL[row.rank - 1] ?? row.rank}
+              <span
+                className={`tnum w-8 shrink-0 font-serif text-2xl leading-none ${
+                  top ? 'text-vermilion' : 'text-ink-faint'
+                }`}
+              >
+                {row.rank}
               </span>
-              <span className="min-w-0 flex-1 truncate font-bold">{row.name}</span>
-              <span className="text-right">
-                <span className="block text-xl font-black tabular-nums">{row.chips}</span>
+              <span className={`min-w-0 flex-1 truncate ${top ? 'font-bold' : ''}`}>
+                {row.name}
+              </span>
+              <span className="tnum text-right">
+                <span className="block font-serif text-2xl leading-none">{row.chips}</span>
                 <span
-                  className={`block text-xs tabular-nums ${
-                    diff > 0 ? 'text-jade-400' : diff < 0 ? 'text-coral-400' : 'text-foam-500'
+                  className={`mt-1 block text-xs ${
+                    diff > 0 ? 'text-ink-soft' : diff < 0 ? 'text-vermilion' : 'text-ink-faint'
                   }`}
                 >
                   {diff > 0 ? `+${diff}` : diff}
                 </span>
               </span>
-            </Panel>
+            </div>
           )
         })}
       </div>

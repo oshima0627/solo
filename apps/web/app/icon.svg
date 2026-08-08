@@ -1,7 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="12" fill="#04141c" />
-  <rect x="10" y="14" width="24" height="34" rx="4" fill="#f7f0e2" transform="rotate(-8 22 31)" />
-  <rect x="30" y="16" width="24" height="34" rx="4" fill="#f7f0e2" transform="rotate(8 42 33)" />
-  <text x="21" y="38" font-family="sans-serif" font-size="18" font-weight="700" fill="#1b2026" text-anchor="middle" transform="rotate(-8 22 31)">A</text>
-  <text x="43" y="41" font-family="sans-serif" font-size="15" font-weight="700" fill="#1b2026" text-anchor="middle" transform="rotate(8 42 33)">10</text>
+  <rect width="64" height="64" fill="#f2eee5" />
+  <g transform="rotate(-8 21 33)">
+    <rect x="9" y="15" width="23" height="34" rx="3" fill="#fbf9f4" stroke="#b8af99" stroke-width="1.5" />
+    <text x="20.5" y="39" font-family="Georgia, serif" font-size="20" fill="#191713" text-anchor="middle">10</text>
+  </g>
+  <g transform="rotate(8 43 35)">
+    <rect x="32" y="17" width="23" height="34" rx="3" fill="#fbf9f4" stroke="#b8af99" stroke-width="1.5" />
+    <text x="43.5" y="41" font-family="Georgia, serif" font-size="20" fill="#c0402a" text-anchor="middle">10</text>
+  </g>
 </svg>

@@ -20,7 +20,9 @@ export default function Page() {
   if (!solo.hydrated) {
     return (
       <Screen>
-        <div className="flex flex-1 items-center justify-center text-foam-500">読み込み中…</div>
+        <div className="flex flex-1 items-center justify-center text-sm text-ink-faint">
+          読み込み中
+        </div>
       </Screen>
     )
   }
@@ -86,7 +88,9 @@ export default function Page() {
     default:
       return (
         <Screen>
-          <div className="flex flex-1 items-center justify-center text-foam-500">準備中…</div>
+          <div className="flex flex-1 items-center justify-center text-sm text-ink-faint">
+            準備中
+          </div>
         </Screen>
       )
   }

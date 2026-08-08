@@ -14,7 +14,7 @@ import {
   type PlayerAction,
 } from '@solo/engine'
 import { HandRow } from './Cards'
-import { Button, NumberInput, Panel, Screen } from './ui'
+import { Button, Screen, Stat, Stepper } from './ui'
 
 const ACTION_LABEL: Record<PlayerAction['type'], string> = {
   PLAY: '勝負する',
@@ -48,22 +48,28 @@ export function TurnScreen({
   const raiseMax = maxRaise(game, playerId)
   const shown = alwaysVisible || held
 
-  // 確認ダイアログ。確定したら取り消せない
+  // 確認画面。確定したら取り消せない
   if (pending) {
     return (
       <Screen>
-        <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
-          <p className="text-sm text-foam-300">{playerName(game, playerId)} さん</p>
-          <p className="text-4xl font-black text-foam-100">
+        <header className="border-b border-rule pb-3">
+          <span className="label">確認</span>
+        </header>
+        <div className="flex flex-1 flex-col justify-center">
+          <p className="text-sm text-ink-soft">{playerName(game, playerId)}</p>
+          <p className="mt-3 font-serif text-6xl leading-tight">
             {ACTION_LABEL[pending.type]}
-            {pending.type === 'RAISE' ? ` +${pending.amount}` : null}
-            {pending.type === 'CALL' && toCall > 0 ? ` ${toCall}` : null}
+            {pending.type === 'RAISE' ? (
+              <span className="tnum text-vermilion"> +{pending.amount}</span>
+            ) : null}
+            {pending.type === 'CALL' && toCall > 0 ? (
+              <span className="tnum text-vermilion"> {toCall}</span>
+            ) : null}
           </p>
-          <p className="text-sm text-foam-500">
-            確定すると取り消せません
-          </p>
+          <div className="mt-6 h-px w-16 bg-vermilion" />
+          <p className="mt-6 text-sm text-ink-soft">確定すると取り消せません。</p>
         </div>
-        <div className="space-y-3 pb-2">
+        <div className="space-y-2.5">
           <Button
             onClick={() => {
               setPending(null)
@@ -73,7 +79,7 @@ export function TurnScreen({
           >
             確定する
           </Button>
-          <Button variant="ghost" onClick={() => setPending(null)}>
+          <Button variant="quiet" onClick={() => setPending(null)}>
             選び直す
           </Button>
         </div>
@@ -83,31 +89,34 @@ export function TurnScreen({
 
   return (
     <Screen>
-      <header className="flex items-center justify-between text-sm">
-        <span className="text-foam-500">第 {game.roundNo} 局</span>
-        <span className="font-bold text-coral-400">{playerName(game, playerId)}</span>
-        <span className="tabular-nums text-foam-300">
-          チップ <span className="font-bold text-foam-100">{chips}</span>
-        </span>
+      <header className="space-y-3 border-b border-rule pb-3">
+        <div className="flex items-baseline justify-between">
+          <span className="label">手札</span>
+          <span className="text-sm font-bold">{playerName(game, playerId)}</span>
+        </div>
+        <div className="grid grid-cols-3 gap-4">
+          <Stat label="局" value={`第 ${game.roundNo} 局`} />
+          <Stat
+            label="場"
+            value={
+              <>
+                {game.round?.pot ?? 0}
+                {game.carryOver > 0 ? (
+                  <span className="text-vermilion"> +{game.carryOver}</span>
+                ) : null}
+              </>
+            }
+          />
+          <Stat
+            label={game.config.bettingMode === 'RAISE' ? 'コール額' : 'チップ'}
+            value={game.config.bettingMode === 'RAISE' ? toCall : chips}
+          />
+        </div>
       </header>
-
-      <Panel className="flex items-center justify-between text-sm">
-        <span className="text-foam-300">
-          場 <span className="font-bold tabular-nums text-foam-100">{game.round?.pot ?? 0}</span>
-        </span>
-        {game.config.bettingMode === 'RAISE' ? (
-          <span className="text-foam-300">
-            コール額 <span className="font-bold tabular-nums text-foam-100">{toCall}</span>
-          </span>
-        ) : null}
-        {game.carryOver > 0 ? (
-          <span className="text-gold-400">持ち越し {game.carryOver}</span>
-        ) : null}
-      </Panel>
 
       {/* 長押ししているあいだだけ手札と役名を表示する。指を離せば即座に隠れる */}
       <div
-        className="hold-area flex flex-1 flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-sea-700 py-6"
+        className="hold-area flex flex-1 flex-col items-center justify-center gap-7"
         onPointerDown={alwaysVisible ? undefined : () => setHeld(true)}
         onPointerUp={alwaysVisible ? undefined : () => setHeld(false)}
         onPointerLeave={alwaysVisible ? undefined : () => setHeld(false)}
@@ -121,17 +130,20 @@ export function TurnScreen({
           highlight={shown && hand !== null && isBomb(hand)}
         />
         {shown && hand ? (
-          <p className="animate-pop text-3xl font-black text-gold-400">{hand.name}</p>
+          <div className="animate-rise text-center">
+            <span className="label block">役</span>
+            <p className="mt-2 font-serif text-4xl leading-none">{hand.name}</p>
+          </div>
         ) : (
-          <p className="text-sm text-foam-500">長押しで手札を見る</p>
+          <p className="text-sm tracking-[0.14em] text-ink-faint">長押しで手札を見る</p>
         )}
       </div>
 
-      <div className="space-y-3 pb-2">
+      <div className="space-y-4">
         {actions.includes('RAISE') ? (
-          <div className="space-y-2">
-            <p className="text-xs text-foam-500">レイズ額（上乗せ）</p>
-            <NumberInput
+          <div className="space-y-2 border-t border-rule pt-4">
+            <span className="label block">レイズ額</span>
+            <Stepper
               value={Math.min(raiseAmount, raiseMax)}
               min={1}
               max={raiseMax}
@@ -140,25 +152,29 @@ export function TurnScreen({
           </div>
         ) : null}
 
-        <div className="grid grid-cols-2 gap-3">
-          {actions.map((type) => (
-            <Button
-              key={type}
-              variant={type === 'FOLD' ? 'danger' : type === 'RAISE' ? 'secondary' : 'primary'}
-              className={actions.length === 3 && type === 'FOLD' ? 'col-span-2' : ''}
-              onClick={() =>
-                setPending(
-                  type === 'RAISE'
-                    ? { type: 'RAISE', amount: Math.min(raiseAmount, raiseMax) }
-                    : ({ type } as PlayerAction),
-                )
-              }
-            >
-              {ACTION_LABEL[type]}
-              {type === 'CALL' && toCall > 0 ? ` ${toCall}` : null}
-              {type === 'CALL' && toCall === 0 ? '（チェック）' : null}
-            </Button>
-          ))}
+        <div className={actions.length === 3 ? 'space-y-2.5' : 'grid grid-cols-2 gap-2.5'}>
+          {actions
+            .filter((type) => type !== 'FOLD')
+            .map((type) => (
+              <Button
+                key={type}
+                variant={type === 'RAISE' ? 'secondary' : 'primary'}
+                onClick={() =>
+                  setPending(
+                    type === 'RAISE'
+                      ? { type: 'RAISE', amount: Math.min(raiseAmount, raiseMax) }
+                      : ({ type } as PlayerAction),
+                  )
+                }
+              >
+                {ACTION_LABEL[type]}
+                {type === 'CALL' && toCall > 0 ? ` ${toCall}` : null}
+                {type === 'CALL' && toCall === 0 ? '（チェック）' : null}
+              </Button>
+            ))}
+          <Button variant="quiet" onClick={() => setPending({ type: 'FOLD' })}>
+            降りる
+          </Button>
         </div>
       </div>
     </Screen>
