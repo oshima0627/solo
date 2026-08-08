@@ -1,6 +1,9 @@
 'use client'
 
+import { useEffect } from 'react'
 import { standings, type GameState } from '@solo/engine'
+import { playCue } from '@/lib/sound'
+import { SoundToggle } from './SoundToggle'
 import { Button, Panel, Screen } from './ui'
 
 const MEDAL = ['🥇', '🥈', '🥉']
@@ -8,11 +11,14 @@ const MEDAL = ['🥇', '🥈', '🥉']
 export function EndScreen({ game, onRestart }: { game: GameState; onRestart: () => void }) {
   const rows = standings(game)
 
+  useEffect(() => playCue('end'), [])
+
   return (
     <Screen>
-      <header className="text-center">
+      <header className="relative text-center">
+        <SoundToggle className="absolute right-0 top-0" />
         <p className="text-sm text-foam-500">全 {game.roundNo} 局</p>
-        <h1 className="mt-1 text-3xl font-black">結果</h1>
+        <h1 className="mt-1 animate-pop text-3xl font-black">結果</h1>
       </header>
 
       <div className="flex-1 space-y-3 overflow-y-auto">

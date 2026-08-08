@@ -25,9 +25,12 @@ const ACTION_LABEL: Record<PlayerAction['type'], string> = {
 export function TurnScreen({
   game,
   onSubmit,
+  alwaysVisible = false,
 }: {
   game: GameState
   onSubmit: (action: PlayerAction) => void
+  /** ひとり練習では隠す相手がいないので、手札を出しっぱなしにする */
+  alwaysVisible?: boolean
 }) {
   const playerId = currentPlayerId(game)
   const [held, setHeld] = useState(false)
@@ -42,6 +45,7 @@ export function TurnScreen({
   const actions = availableActions(game, playerId)
   const toCall = callAmount(game, playerId)
   const raiseMax = maxRaise(game, playerId)
+  const shown = alwaysVisible || held
 
   // 確認ダイアログ。確定したら取り消せない
   if (pending) {
@@ -103,14 +107,14 @@ export function TurnScreen({
       {/* 長押ししているあいだだけ手札と役名を表示する。指を離せば即座に隠れる */}
       <div
         className="hold-area flex flex-1 flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-sea-700 py-6"
-        onPointerDown={() => setHeld(true)}
-        onPointerUp={() => setHeld(false)}
-        onPointerLeave={() => setHeld(false)}
-        onPointerCancel={() => setHeld(false)}
+        onPointerDown={alwaysVisible ? undefined : () => setHeld(true)}
+        onPointerUp={alwaysVisible ? undefined : () => setHeld(false)}
+        onPointerLeave={alwaysVisible ? undefined : () => setHeld(false)}
+        onPointerCancel={alwaysVisible ? undefined : () => setHeld(false)}
         onContextMenu={(e) => e.preventDefault()}
       >
-        <HandRow cards={cards} hidden={!held} size="lg" />
-        {held && hand ? (
+        <HandRow cards={cards} hidden={!shown} size="lg" />
+        {shown && hand ? (
           <p className="animate-pop text-3xl font-black text-gold-400">{hand.name}</p>
         ) : (
           <p className="text-sm text-foam-500">長押しで手札を見る</p>

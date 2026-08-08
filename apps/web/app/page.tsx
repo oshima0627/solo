@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import type { GameConfig } from '@solo/engine'
+import { currentPlayerId, isCpu, type GameConfig } from '@solo/engine'
+import { CpuTurnScreen } from '@/components/CpuTurnScreen'
 import { EndScreen } from '@/components/EndScreen'
 import { HandoffScreen } from '@/components/HandoffScreen'
 import { HomeScreen } from '@/components/HomeScreen'
@@ -50,9 +51,17 @@ export default function Page() {
 
   const game = solo.game
 
+  const actor = currentPlayerId(game)
+  // 人間が 1 人だけなら受け渡しの必要がないので、シールドも長押しも省く
+  const soloPractice = game.config.players.filter((p) => !p.isCpu).length === 1
+
   switch (game.phase) {
     case 'DECIDE':
     case 'BET':
+      if (actor && isCpu(game, actor)) return <CpuTurnScreen game={game} />
+      if (soloPractice) {
+        return <TurnScreen game={game} onSubmit={solo.submitAction} alwaysVisible />
+      }
       return solo.shielded ? (
         <HandoffScreen game={game} onReveal={solo.reveal} />
       ) : (

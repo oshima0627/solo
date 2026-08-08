@@ -15,6 +15,7 @@ import type {
 } from './types'
 
 type Hands = Readonly<Record<PlayerId, readonly [Card, Card]>>
+type Chips = Readonly<Record<PlayerId, number>>
 
 /** 新しいゲームを作る。設定の妥当性はここで検証する */
 export function createGame(config: GameConfig): GameState {
@@ -266,7 +267,7 @@ function applyRaiseAction(
   }
 
   const interim: RoundState = { ...round, status, bets, pot, currentBet, actedSinceRaise: acted }
-  const nextIndex = nextActorIndex(interim)
+  const nextIndex = nextActorIndex(interim, chips)
   const next: RoundState = { ...interim, turnIndex: nextIndex ?? interim.turnIndex }
   const advanced: GameState = { ...state, chips, round: next }
 
@@ -275,9 +276,11 @@ function applyRaiseAction(
 
 /**
  * 次に行動すべきプレイヤーの手番位置。全員のベットが揃っていれば null。
- * オールイン（手持ち 0）のプレイヤーはこれ以上行動できないため飛ばす。
+ *
+ * オールイン（手持ち 0）のプレイヤーは、コール額に届いていなくてもそれ以上支払えない。
+ * 行動済みであれば飛ばさないと、同じプレイヤーに永久に手番が回り続ける。
  */
-function nextActorIndex(round: RoundState): number | null {
+function nextActorIndex(round: RoundState, chips: Chips): number | null {
   const alive = round.order.filter((id) => round.status[id] !== 'FOLDED')
   if (alive.length <= 1) return null
 
@@ -286,7 +289,9 @@ function nextActorIndex(round: RoundState): number | null {
     const index = (round.turnIndex + i) % round.order.length
     const id = round.order[index]!
     if (round.status[id] === 'FOLDED') continue
-    if (acted.has(id) && get(round.bets, id) === round.currentBet) continue
+    if (!acted.has(id)) return index
+    // 行動済みで、コール額に達しているか、もう払えない場合は飛ばす
+    if (get(round.bets, id) === round.currentBet || get(chips, id) === 0) continue
     return index
   }
   return null

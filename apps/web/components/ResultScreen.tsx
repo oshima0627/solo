@@ -1,8 +1,24 @@
 'use client'
 
+import { useEffect } from 'react'
 import { evaluateHand, playerName, type GameState, type RoundResult } from '@solo/engine'
+import { playCue, type Cue } from '@/lib/sound'
 import { HandRow } from './Cards'
+import { SoundToggle } from './SoundToggle'
 import { Button, Panel, Screen } from './ui'
+
+function cueFor(result: RoundResult): Cue {
+  if (result.bombCharge > 0) return 'bomb'
+  switch (result.outcome.outcome) {
+    case 'WIN':
+    case 'WIN_BY_FOLD':
+      return 'win'
+    case 'DRAW':
+      return 'draw'
+    default:
+      return 'flow'
+  }
+}
 
 function headline(game: GameState, result: RoundResult) {
   switch (result.outcome.outcome) {
@@ -54,17 +70,33 @@ export function ResultScreen({
   onQuit: () => void
 }) {
   const result = game.history.at(-1)
+  const roundNo = result?.roundNo
+
+  // 局が変わったときだけ鳴らす
+  useEffect(() => {
+    if (result) playCue(cueFor(result))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [roundNo])
+
   if (!result) return null
 
   const info = headline(game, result)
   const revealed = new Set(result.revealed)
+  const isBomb = result.bombCharge > 0
 
   return (
     <Screen>
-      <header className="text-center">
+      <header className="relative text-center">
+        <SoundToggle className="absolute right-0 top-0" />
         <p className="text-sm text-foam-500">第 {result.roundNo} 局</p>
         <h1 className="mt-1 text-2xl font-bold">{info.title}</h1>
-        <p className={`mt-2 animate-pop text-5xl font-black ${info.tone}`}>{info.callout}</p>
+        <p
+          className={`mt-2 text-5xl font-black ${info.tone} ${
+            isBomb ? 'animate-bomb' : 'animate-pop'
+          }`}
+        >
+          {info.callout}
+        </p>
         {info.note ? <p className="mt-2 text-xs text-foam-500">{info.note}</p> : null}
         {result.bombCharge > 0 ? (
           <p className="mt-2 text-sm text-gold-400">
@@ -95,7 +127,7 @@ export function ResultScreen({
                   {payout > 0 ? `+${payout}` : payout} → {game.chips[player.id] ?? 0}
                 </p>
               </div>
-              {cards ? <HandRow cards={cards} hidden={!shown} size="sm" /> : null}
+              {cards ? <HandRow cards={cards} hidden={!shown} size="sm" animate={shown} /> : null}
             </Panel>
           )
         })}

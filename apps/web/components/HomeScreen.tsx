@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { SoundToggle } from './SoundToggle'
 import { Button, Screen } from './ui'
 
 export function HomeScreen({
@@ -14,6 +15,9 @@ export function HomeScreen({
 }) {
   return (
     <Screen>
+      <div className="flex justify-end">
+        <SoundToggle />
+      </div>
       <div className="flex flex-1 flex-col items-center justify-center gap-3 text-center">
         <p className="text-sm tracking-[0.4em] text-foam-500">OKINAWA CARD GAME</p>
         <h1 className="text-6xl font-black tracking-tight text-foam-100">ソロ</h1>

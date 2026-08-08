@@ -22,6 +22,7 @@ export function SetupScreen({
   onStart: (config: GameConfig) => void
   onBack: () => void
 }) {
+  const [mode, setMode] = useState<'PASS' | 'SOLO'>('PASS')
   const [playerCount, setPlayerCount] = useState(3)
   const [names, setNames] = useState<string[]>(() =>
     Array.from({ length: MAX_PLAYERS }, (_, i) => `プレイヤー${i + 1}`),
@@ -53,11 +54,15 @@ export function SetupScreen({
           : { type: 'FREE' }
 
     onStart({
-      players: Array.from({ length: playerCount }, (_, i) => ({
-        id: `p${i + 1}`,
-        name: names[i]?.trim() || `プレイヤー${i + 1}`,
-        isCpu: false,
-      })),
+      // ひとり練習では 1 人目だけが人間で、残りは CPU になる
+      players: Array.from({ length: playerCount }, (_, i) => {
+        const isCpu = mode === 'SOLO' && i > 0
+        return {
+          id: `p${i + 1}`,
+          name: isCpu ? `CPU ${i}` : names[i]?.trim() || `プレイヤー${i + 1}`,
+          isCpu,
+        }
+      }),
       bettingMode,
       endCondition,
       initialChips,
@@ -86,8 +91,28 @@ export function SetupScreen({
       </header>
 
       <div className="flex-1 space-y-4 overflow-y-auto pb-4">
+        <Panel className="space-y-3">
+          <Field
+            label="遊び方"
+            hint={
+              mode === 'PASS'
+                ? '1台の端末を回して、その場にいる人と遊びます。'
+                : 'CPU を相手に1人で遊びます。ルールを覚えるのにも使えます。'
+            }
+          >
+            <Segmented
+              value={mode}
+              onChange={setMode}
+              options={[
+                { value: 'PASS', label: 'みんなで' },
+                { value: 'SOLO', label: 'ひとり練習' },
+              ]}
+            />
+          </Field>
+        </Panel>
+
         <Panel className="space-y-4">
-          <Field label="人数">
+          <Field label={mode === 'SOLO' ? '人数（自分＋CPU）' : '人数'}>
             <NumberInput
               value={playerCount}
               min={MIN_PLAYERS}
@@ -96,7 +121,7 @@ export function SetupScreen({
             />
           </Field>
           <div className="space-y-2">
-            {Array.from({ length: playerCount }, (_, i) => (
+            {Array.from({ length: mode === 'SOLO' ? 1 : playerCount }, (_, i) => (
               <input
                 key={i}
                 value={names[i] ?? ''}
@@ -106,6 +131,11 @@ export function SetupScreen({
                 className="w-full rounded-xl bg-sea-800 px-4 py-3 text-base outline-none focus:ring-2 focus:ring-coral-500"
               />
             ))}
+            {mode === 'SOLO' ? (
+              <p className="text-xs text-foam-500">
+                相手は CPU 1 〜 CPU {playerCount - 1} になります
+              </p>
+            ) : null}
           </div>
         </Panel>
 

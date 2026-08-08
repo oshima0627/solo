@@ -50,16 +50,27 @@ export function HandRow({
   cards,
   hidden = false,
   size = 'md',
+  animate = false,
 }: {
   cards: readonly Card[] | null
   hidden?: boolean
   size?: 'sm' | 'md' | 'lg'
+  /** 公開時にめくる演出を付ける */
+  animate?: boolean
 }) {
   return (
     <div className="flex justify-center gap-3">
       {hidden || !cards
         ? [0, 1].map((i) => <CardBack key={i} size={size} />)
-        : cards.map((card) => <CardFace key={`${card.suit}${card.rank}`} card={card} size={size} />)}
+        : cards.map((card, i) => (
+            <div
+              key={`${card.suit}${card.rank}`}
+              className={animate ? 'animate-flip' : undefined}
+              style={animate ? { animationDelay: `${i * 90}ms` } : undefined}
+            >
+              <CardFace card={card} size={size} />
+            </div>
+          ))}
     </div>
   )
 }

@@ -57,6 +57,32 @@ describe('レイズ方式：ベットの周回', () => {
   })
 })
 
+describe('レイズ方式：オールイン', () => {
+  it('コール額に届かないオールインの後も周回が正しく終わる', () => {
+    // 手持ちが足りない人はコール額に達しないまま行動済みになる。
+    // これを飛ばさないと、同じプレイヤーに永久に手番が回り続ける。
+    const base = setup({ ...RAISE_MODE, initialChips: 10 })
+    let s = start({ ...base, chips: { a: 10, b: 2, c: 10 } }, {
+      a: [1, 9],
+      b: [3, 7],
+      c: [1, 8],
+    })
+
+    s = act(s, 'a', raise(5))
+    s = act(s, 'b', CALL) // 手持ち 1 しかないのでオールイン
+    expect(s.chips.b).toBe(0)
+    expect(s.round?.bets.b).toBe(1)
+    expect(currentPlayerId(s)).toBe('c') // B に手番が戻らない
+
+    s = act(s, 'c', CALL)
+    expect(s.phase).toBe('RESULT')
+
+    // サイドポットは扱わないので、オールインの B も全額を争う
+    const held = Object.values(s.chips).reduce((x, y) => x + y, 0)
+    expect(held).toBe(22)
+  })
+})
+
 describe('レイズ方式：ブラフ勝ち', () => {
   it('残り 1 人になったら手札を公開せずに勝つ', () => {
     // A はブタだが、レイズで 2 人を降ろして勝つ

@@ -42,3 +42,5 @@ export type { DealtHands } from './deal'
 export { shuffle, dealHands } from './deal'
 
 export * from './game/index'
+
+export { estimateWinRate, decideCpuAction } from './cpu'
