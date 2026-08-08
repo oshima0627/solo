@@ -1,6 +1,6 @@
 'use client'
 
-import { currentPlayerId, playerName, type GameState } from '@solo/engine'
+import { currentPlayerId, deckColorLabel, playerName, type GameState } from '@solo/engine'
 import { Button, Screen } from './ui'
 
 /**
@@ -14,7 +14,9 @@ export function HandoffScreen({ game, onReveal }: { game: GameState; onReveal: (
   return (
     <Screen>
       <div className="flex flex-1 flex-col items-center justify-center gap-6 text-center">
-        <p className="text-sm text-foam-500">第 {game.roundNo} 局</p>
+        <p className="text-sm text-foam-500">
+          第 {game.roundNo} 局 ・ 山札 {deckColorLabel(game.deckColor)}
+        </p>
         <div>
           <p className="text-sm text-foam-300">端末を渡してください</p>
           <p className="mt-3 text-5xl font-black text-coral-400">{playerName(game, playerId)}</p>

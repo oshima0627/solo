@@ -1,5 +1,5 @@
 import type { Card, Rank } from './card'
-import { formatCard, isBlackSuit } from './card'
+import { formatCard } from './card'
 import { soloOrder, type RuleVariant } from './rules'
 
 /**
@@ -63,18 +63,12 @@ export function evaluateHand(cards: readonly [Card, Card], rules: RuleVariant): 
   if (a.rank === b.rank) {
     const order = soloOrder(rules)
     const index = order.indexOf(a.rank)
-    // バクダンは「黒の 10 のペア」に限られる。
-    // 20 枚構成では黒しかないので、10ソロ は必ずバクダンになる。
-    // 40 枚構成では赤が絡む 10ソロ が存在し、バクダンのひとつ下に位置する。
-    const bomb = a.rank === 10 && isBlackSuit(a.suit) && isBlackSuit(b.suit)
     return {
       cards,
       category: 'SOLO',
       rank: a.rank,
-      score: bomb
-        ? SCORE_BASE.SOLO + order.length + 1
-        : SCORE_BASE.SOLO + (order.length - index),
-      name: bomb ? 'バクダン' : soloName(a.rank),
+      score: SCORE_BASE.SOLO + (order.length - index),
+      name: soloName(a.rank),
     }
   }
 
@@ -114,13 +108,12 @@ export function compareHands(a: Hand, b: Hand): number {
   return a.score - b.score
 }
 
-/** バクダン（黒の 10 のペア）かどうか */
+/**
+ * バクダン（10 のペア）かどうか。
+ * 山札は常に 1 色なので、10 が 2 枚揃えばそれが必ずその色の 10 のペアになる。
+ */
 export function isBomb(hand: Hand): boolean {
-  return (
-    hand.category === 'SOLO' &&
-    hand.rank === 10 &&
-    hand.cards.every((card) => isBlackSuit(card.suit))
-  )
+  return hand.category === 'SOLO' && hand.rank === 10
 }
 
 export function isFlow(hand: Hand): boolean {
@@ -151,6 +144,7 @@ function pinPartner(ranks: readonly [Rank, Rank], rules: RuleVariant): Rank | nu
 }
 
 function soloName(rank: Rank): string {
+  if (rank === 10) return 'バクダン'
   if (rank === 1) return 'ピンゾロ'
   return `${rank}ソロ`
 }

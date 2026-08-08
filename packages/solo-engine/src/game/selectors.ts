@@ -85,6 +85,6 @@ export function standings(state: GameState): Standing[] {
 export function dealForRound(state: GameState, rng: Rng): GameEvent {
   return {
     type: 'START_ROUND',
-    hands: dealHands(eligiblePlayers(state), rng, state.config.rules),
+    hands: dealHands(eligiblePlayers(state), rng, state.deckColor),
   }
 }

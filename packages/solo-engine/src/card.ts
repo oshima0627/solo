@@ -1,13 +1,11 @@
 /**
- * ソロの山札は A〜10 だけを使い、J・Q・K・JOKER は使わない。
+ * ソロの山札は 1 色 2 スートの A〜10、計 20 枚。
+ * J・Q・K・JOKER と、もう一方の色は使わない。
  *
- * 枚数には説が 2 つある。
- * - 20 枚説: 1 色 2 スート（♠♣）のみ。「孤独のボドゲ」が明記している構成
- * - 40 枚説: 4 スートすべて。原型とされる株札が 40 枚であること、および
- *   「一番強いのは"黒の"10 のペア」という証言が、赤が混ざっていないと
- *   限定する意味を持たないことから支持される
- *
- * どちらが正しいか資料は割れているため、RuleVariant で切り替える。
+ * ただし色は固定ではなく、バクダンが出たら黒（♠♣）と赤（♥♦）を入れ替える。
+ * どちらの色でもランクの構成は同じなので、確率や役の強さには一切影響しない。
+ * 「一番強いのは"黒の"10 のペア」という証言は、そのとき使っていた山札が
+ * 黒だったことを指している。
  */
 
 export type Rank = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10
@@ -22,13 +20,31 @@ export interface Card {
 
 export const RANKS: readonly Rank[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
-/** 黒のみ（20 枚構成で使う） */
-export const BLACK_SUITS: readonly Suit[] = ['S', 'C']
-/** 4 スートすべて（40 枚構成で使う） */
-export const ALL_SUITS: readonly Suit[] = ['S', 'C', 'H', 'D']
+/** 使用中の山札の色 */
+export type DeckColor = 'BLACK' | 'RED'
 
-export const BLACK_DECK_SIZE = RANKS.length * BLACK_SUITS.length
-export const FULL_DECK_SIZE = RANKS.length * ALL_SUITS.length
+export const BLACK_SUITS: readonly Suit[] = ['S', 'C']
+export const RED_SUITS: readonly Suit[] = ['H', 'D']
+
+/** 山札の枚数。色に関わらず常に 20 枚 */
+export const DECK_SIZE = RANKS.length * BLACK_SUITS.length
+
+export function suitsForColor(color: DeckColor): readonly Suit[] {
+  return color === 'RED' ? RED_SUITS : BLACK_SUITS
+}
+
+export function oppositeColor(color: DeckColor): DeckColor {
+  return color === 'BLACK' ? 'RED' : 'BLACK'
+}
+
+export function colorOfCard(card: Card): DeckColor {
+  return isRedSuit(card.suit) ? 'RED' : 'BLACK'
+}
+
+/** 表示用の色名 */
+export function deckColorLabel(color: DeckColor): string {
+  return color === 'RED' ? '♥♦（赤）' : '♠♣（黒）'
+}
 
 /** 1 人に配られる手札の枚数。本バージョンは 2 枚配り固定 */
 export const HAND_SIZE = 2

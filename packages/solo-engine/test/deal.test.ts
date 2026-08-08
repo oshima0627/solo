@@ -1,19 +1,13 @@
 import { describe, expect, it } from 'vitest'
-import { ALL_SUITS, BLACK_DECK_SIZE, cardId, createDeck, FULL_DECK_SIZE } from '../src/card'
+import { cardId, createDeck, DECK_SIZE } from '../src/card'
 import { dealHands, shuffle } from '../src/deal'
 import { mulberry32 } from '../src/rng'
-import { withRules } from '../src/rules'
 
 describe('山札', () => {
   it('既定は黒 2 スートの 20 枚である', () => {
-    expect(createDeck()).toHaveLength(BLACK_DECK_SIZE)
-    expect(BLACK_DECK_SIZE).toBe(20)
+    expect(createDeck()).toHaveLength(DECK_SIZE)
+    expect(DECK_SIZE).toBe(20)
     expect(createDeck().every((c) => c.suit === 'S' || c.suit === 'C')).toBe(true)
-  })
-
-  it('4 スート指定なら 40 枚になる', () => {
-    expect(createDeck(ALL_SUITS)).toHaveLength(FULL_DECK_SIZE)
-    expect(FULL_DECK_SIZE).toBe(40)
   })
 
   it('A〜10 が 2 枚ずつで、重複がない', () => {
@@ -30,7 +24,7 @@ describe('シャッフル', () => {
     const deck = createDeck()
     const shuffled = shuffle(deck, mulberry32(1))
     expect(deck.map(cardId)).toEqual(createDeck().map(cardId))
-    expect(shuffled).toHaveLength(BLACK_DECK_SIZE)
+    expect(shuffled).toHaveLength(DECK_SIZE)
     expect(new Set(shuffled.map(cardId))).toEqual(new Set(deck.map(cardId)))
   })
 
@@ -84,15 +78,11 @@ describe('配札', () => {
     expect(() => dealHands(['a', 'a'], mulberry32(1))).toThrow()
   })
 
-  it('40 枚構成では赤いカードも配られる', () => {
-    const rules = withRules({ deck: 'FULL40' })
-    let sawRed = false
-    for (let seed = 0; seed < 50 && !sawRed; seed++) {
-      const hands = dealHands(['a', 'b', 'c'], mulberry32(seed), rules)
-      sawRed = Object.values(hands)
-        .flat()
-        .some((card) => card.suit === 'H' || card.suit === 'D')
-    }
-    expect(sawRed).toBe(true)
+  it('色を指定すると、その色のカードだけが配られる', () => {
+    const hands = dealHands(['a', 'b', 'c'], mulberry32(3), 'RED')
+    const suits = Object.values(hands)
+      .flat()
+      .map((card) => card.suit)
+    expect(suits.every((suit) => suit === 'H' || suit === 'D')).toBe(true)
   })
 })

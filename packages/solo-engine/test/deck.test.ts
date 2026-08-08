@@ -1,115 +1,180 @@
 import { describe, expect, it } from 'vitest'
-import type { Card, Rank, Suit } from '../src/card'
-import { ALL_SUITS, createDeck } from '../src/card'
-import { compareHands, evaluateHand, isBomb, type HandCategory } from '../src/hand'
+import {
+  BLACK_SUITS,
+  colorOfCard,
+  createDeck,
+  DECK_SIZE,
+  oppositeColor,
+  RED_SUITS,
+  suitsForColor,
+} from '../src/card'
+import { dealHands } from '../src/deal'
+import { evaluateHand, isBomb } from '../src/hand'
+import { mulberry32 } from '../src/rng'
 import { DEFAULT_RULES, withRules } from '../src/rules'
-import { resolveShowdown } from '../src/showdown'
+import { reduce } from '../src/game/reducer'
+import { dealForRound } from '../src/game/selectors'
+import { act, FOLD, PLAY, setup, start } from './gameHelpers'
+import { hand } from './helpers'
 
 /**
- * 40 枚構成（4 スート）の検証。
- * 20 枚構成では 10ソロ が必ず黒のペアになるためバクダンと一致するが、
- * 40 枚構成では赤の絡む 10ソロ が存在し、バクダンはそのひとつ上に置かれる。
+ * 山札は常に 1 色 20 枚。
+ * バクダンが出たら黒（♠♣）と赤（♥♦）を入れ替える。
  */
 
-const FULL = withRules({ deck: 'FULL40' })
-
-function card(rank: Rank, suit: Suit): Card {
-  return { rank, suit }
-}
-
-function allCombinations(): [Card, Card][] {
-  const deck = createDeck(ALL_SUITS)
-  const combos: [Card, Card][] = []
-  for (let i = 0; i < deck.length; i++) {
-    for (let j = i + 1; j < deck.length; j++) {
-      combos.push([deck[i]!, deck[j]!])
-    }
-  }
-  return combos
-}
-
-const COMBOS = allCombinations()
-
-describe('40 枚構成の全 780 通り', () => {
-  it('組み合わせは 780 通りある', () => {
-    expect(COMBOS).toHaveLength(780)
+describe('山札の色', () => {
+  it('どちらの色でも 20 枚で、ランクの構成は同じ', () => {
+    const black = createDeck(suitsForColor('BLACK'))
+    const red = createDeck(suitsForColor('RED'))
+    expect(black).toHaveLength(DECK_SIZE)
+    expect(red).toHaveLength(DECK_SIZE)
+    expect(black.map((c) => c.rank).sort()).toEqual(red.map((c) => c.rank).sort())
   })
 
-  it('カテゴリの内訳', () => {
-    const counts: Record<HandCategory, number> = {
-      FLOW: 0,
-      SOLO: 0,
-      GYAKU_SOLO: 0,
-      PIN: 0,
-      NUMBER: 0,
-    }
-    for (const combo of COMBOS) counts[evaluateHand(combo, FULL).category]++
+  it('黒は ♠♣、赤は ♥♦ になる', () => {
+    expect(suitsForColor('BLACK')).toEqual(BLACK_SUITS)
+    expect(suitsForColor('RED')).toEqual(RED_SUITS)
+    expect(createDeck(suitsForColor('RED')).every((c) => colorOfCard(c) === 'RED')).toBe(true)
+  })
 
-    expect(counts).toEqual({
-      SOLO: 60, // 10ランク × 4枚から2枚を選ぶ6通り
-      FLOW: 16, // 4と6が4枚ずつ
-      GYAKU_SOLO: 16,
-      PIN: 48, // A と 10/9/5 の3種 × 16通り
-      NUMBER: 640,
-    })
+  it('色を反転できる', () => {
+    expect(oppositeColor('BLACK')).toBe('RED')
+    expect(oppositeColor('RED')).toBe('BLACK')
+  })
+
+  it('指定した色のカードだけが配られる', () => {
+    const hands = dealHands(['a', 'b', 'c'], mulberry32(1), 'RED')
+    expect(
+      Object.values(hands)
+        .flat()
+        .every((card) => colorOfCard(card) === 'RED'),
+    ).toBe(true)
   })
 })
 
-describe('バクダンは黒の 10 のペアに限られる', () => {
-  it('♠10 と ♣10 だけがバクダン', () => {
-    const bomb = evaluateHand([card(10, 'S'), card(10, 'C')], FULL)
-    expect(bomb.name).toBe('バクダン')
-    expect(isBomb(bomb)).toBe(true)
+describe('バクダンは色に関わらず 10 のペア', () => {
+  it('黒の 10 ペアはバクダン', () => {
+    expect(isBomb(evaluateHand(hand(10, 10, ['S', 'C']), DEFAULT_RULES))).toBe(true)
   })
 
-  it('赤が絡む 10 のペアは 10ソロ になる', () => {
-    for (const pair of [
-      [card(10, 'H'), card(10, 'D')],
-      [card(10, 'S'), card(10, 'H')],
-      [card(10, 'C'), card(10, 'D')],
-    ] as [Card, Card][]) {
-      const hand = evaluateHand(pair, FULL)
-      expect(hand.name).toBe('10ソロ')
-      expect(isBomb(hand)).toBe(false)
-    }
+  it('赤の 10 ペアもバクダン', () => {
+    expect(isBomb(evaluateHand(hand(10, 10, ['H', 'D']), DEFAULT_RULES))).toBe(true)
   })
 
-  it('バクダン ＞ 10ソロ ＞ 9ソロ の順になる', () => {
-    const bomb = evaluateHand([card(10, 'S'), card(10, 'C')], FULL)
-    const tenSolo = evaluateHand([card(10, 'H'), card(10, 'D')], FULL)
-    const nineSolo = evaluateHand([card(9, 'S'), card(9, 'C')], FULL)
-    expect(compareHands(bomb, tenSolo)).toBeGreaterThan(0)
-    expect(compareHands(tenSolo, nineSolo)).toBeGreaterThan(0)
-  })
-
-  it('バクダンは 780 通り中ちょうど 1 通りしかなく、単独のままである', () => {
-    const bombs = COMBOS.filter((combo) => isBomb(evaluateHand(combo, FULL)))
-    expect(bombs).toHaveLength(1)
-  })
-
-  it('10ソロ 同士の引き分けが起こりうる（20 枚構成では起こらない）', () => {
-    const result = resolveShowdown([
-      { playerId: 'a', hand: evaluateHand([card(10, 'S'), card(10, 'H')], FULL) },
-      { playerId: 'b', hand: evaluateHand([card(10, 'C'), card(10, 'D')], FULL) },
-    ])
-    expect(result.outcome).toBe('DRAW')
-    if (result.outcome === 'DRAW') expect(result.name).toBe('10ソロ')
+  it('役名とスコアは色によって変わらない', () => {
+    const black = evaluateHand(hand(10, 10, ['S', 'C']), DEFAULT_RULES)
+    const red = evaluateHand(hand(10, 10, ['H', 'D']), DEFAULT_RULES)
+    expect(black.name).toBe('バクダン')
+    expect(red.name).toBe('バクダン')
+    expect(black.score).toBe(red.score)
   })
 })
 
-describe('20 枚構成との整合', () => {
-  it('20 枚構成では 10 のペアは必ずバクダンになる', () => {
-    const hand = evaluateHand([card(10, 'S'), card(10, 'C')], DEFAULT_RULES)
-    expect(hand.name).toBe('バクダン')
-    expect(isBomb(hand)).toBe(true)
+describe('バクダンで山札を入れ替える', () => {
+  it('開始時は黒の山札を使う', () => {
+    const s = setup()
+    expect(s.deckColor).toBe('BLACK')
+    const dealt = start(s, { a: [1, 9], b: [1, 8], c: [3, 7] })
+    expect(dealt.history).toHaveLength(0)
   })
 
-  it('ピンやシロクなどの判定は枚数構成に影響されない', () => {
-    for (const rules of [DEFAULT_RULES, FULL]) {
-      expect(evaluateHand([card(1, 'S'), card(9, 'C')], rules).name).toBe('クッピン')
-      expect(evaluateHand([card(1, 'S'), card(8, 'C')], rules).name).toBe('カブ')
-      expect(evaluateHand([card(4, 'S'), card(6, 'C')], rules).category).toBe('FLOW')
-      expect(evaluateHand([card(9, 'S'), card(6, 'C')], rules).name).toBe('逆ソロ')
+  it('バクダンが公開されたら次のラウンドから赤になる', () => {
+    let s = start(setup(), { a: [10, 10], b: [1, 9], c: [1, 8] })
+    s = act(s, 'a', PLAY)
+    s = act(s, 'b', PLAY)
+    s = act(s, 'c', PLAY)
+
+    const result = s.history.at(-1)!
+    expect(result.deckColor).toBe('BLACK') // この局は黒で戦った
+    expect(result.deckSwapped).toBe(true)
+    expect(s.deckColor).toBe('RED') // 次の局から赤
+
+    s = reduce(s, { type: 'NEXT_ROUND' })
+    s = reduce(s, dealForRound(s, mulberry32(1)))
+    const dealt = Object.values(s.round!.hands).flat()
+    expect(dealt.every((card) => colorOfCard(card) === 'RED')).toBe(true)
+  })
+
+  it('もう一度バクダンが出れば黒に戻る', () => {
+    let s = start(setup(), { a: [10, 10], b: [1, 9], c: [1, 8] })
+    s = act(s, 'a', PLAY)
+    s = act(s, 'b', PLAY)
+    s = act(s, 'c', PLAY)
+    expect(s.deckColor).toBe('RED')
+
+    s = reduce(s, { type: 'NEXT_ROUND' })
+    s = start(s, { a: [10, 10], b: [1, 9], c: [1, 8] })
+    s = act(s, 'a', PLAY)
+    s = act(s, 'b', PLAY)
+    s = act(s, 'c', PLAY)
+    expect(s.deckColor).toBe('BLACK')
+  })
+
+  it('バクダンが出なければ色は変わらない', () => {
+    let s = start(setup(), { a: [1, 9], b: [1, 8], c: [3, 7] })
+    s = act(s, 'a', PLAY)
+    s = act(s, 'b', PLAY)
+    s = act(s, 'c', PLAY)
+    expect(s.history.at(-1)!.deckSwapped).toBe(false)
+    expect(s.deckColor).toBe('BLACK')
+  })
+
+  it('バクダンを持っていても降りて公開しなければ入れ替わらない', () => {
+    let s = start(setup(), { a: [10, 10], b: [1, 9], c: [1, 8] })
+    s = act(s, 'a', FOLD)
+    s = act(s, 'b', PLAY)
+    s = act(s, 'c', PLAY)
+    expect(s.history.at(-1)!.deckSwapped).toBe(false)
+    expect(s.deckColor).toBe('BLACK')
+  })
+
+  it('レイズ方式のブラフ勝ちでは手札が公開されないので入れ替わらない', () => {
+    let s = start(setup({ bettingMode: 'RAISE' }), { a: [10, 10], b: [1, 9], c: [1, 8] })
+    s = act(s, 'a', { type: 'RAISE', amount: 5 })
+    s = act(s, 'b', FOLD)
+    s = act(s, 'c', FOLD)
+    expect(s.history.at(-1)!.outcome.outcome).toBe('WIN_BY_FOLD')
+    expect(s.history.at(-1)!.deckSwapped).toBe(false)
+    expect(s.deckColor).toBe('BLACK')
+  })
+
+  it('流局でもバクダンが公開されていれば入れ替わる', () => {
+    // シロクで流局しても、バクダンは場に出ている
+    let s = start(setup(), { a: [4, 6], b: [10, 10], c: [1, 9] })
+    s = act(s, 'a', PLAY)
+    s = act(s, 'b', PLAY)
+    s = act(s, 'c', PLAY)
+    expect(s.history.at(-1)!.outcome.outcome).toBe('FLOW')
+    expect(s.deckColor).toBe('RED')
+  })
+
+  it('設定を切ると入れ替わらない', () => {
+    const rules = withRules({ swapDeckOnBomb: false })
+    let s = start(setup({ rules }), { a: [10, 10], b: [1, 9], c: [1, 8] })
+    s = act(s, 'a', PLAY)
+    s = act(s, 'b', PLAY)
+    s = act(s, 'c', PLAY)
+    expect(s.history.at(-1)!.deckSwapped).toBe(false)
+    expect(s.deckColor).toBe('BLACK')
+  })
+})
+
+describe('色は勝敗に影響しない', () => {
+  it('赤の山札でも役の判定はまったく同じ', () => {
+    const pairs: [number, number][] = [
+      [1, 9],
+      [1, 8],
+      [4, 6],
+      [9, 6],
+      [10, 10],
+      [3, 7],
+    ]
+    for (const [x, y] of pairs) {
+      const black = evaluateHand(hand(x as never, y as never, ['S', 'C']), DEFAULT_RULES)
+      const red = evaluateHand(hand(x as never, y as never, ['H', 'D']), DEFAULT_RULES)
+      expect(red.name).toBe(black.name)
+      expect(red.score).toBe(black.score)
+      expect(red.category).toBe(black.category)
     }
   })
 })

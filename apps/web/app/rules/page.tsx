@@ -1,8 +1,7 @@
 import Link from 'next/link'
 
 const HANDS = [
-  { group: 'ソロ', name: 'バクダン', cards: '黒の10 - 黒の10', note: '最強。黒の10は2枚しかないので必ず単独' },
-  { group: 'ソロ', name: '10ソロ', cards: '10 - 10（赤が絡む）', note: '40枚構成のときだけ存在する' },
+  { group: 'ソロ', name: 'バクダン', cards: '10 - 10', note: '最強。10は2枚しかないので必ず単独' },
   { group: 'ソロ', name: '9ソロ 〜 2ソロ', cards: '同じ数字2枚', note: '数字が大きいほど強い' },
   { group: 'ソロ', name: 'ピンゾロ', cards: 'A - A', note: 'ソロの中では最弱（設定で変更可）' },
   { group: '逆ソロ', name: '逆ソロ', cards: '9 - 6', note: 'ソロの下、ピンの上' },
@@ -37,7 +36,7 @@ export default function RulesPage() {
       <section className="space-y-3">
         <h2 className="text-lg font-bold text-coral-400">遊び方</h2>
         <ol className="space-y-2 text-sm leading-relaxed text-foam-300">
-          <li>1. トランプのA〜10だけを使います（J・Q・K・JOKERは使いません）。</li>
+          <li>1. トランプの1色2スート（♠♣）のA〜10、計20枚だけを使います。</li>
           <li>2. 全員が場代を出し、各自に2枚ずつ配ります。</li>
           <li>3. 手札を見て、勝負するか降りるかを決めます。</li>
           <li>4. 公開して役の強さを比べ、最も強い人が場のチップを総取りします。</li>
@@ -104,29 +103,22 @@ export default function RulesPage() {
       </section>
 
       <section className="space-y-3">
-        <h2 className="text-lg font-bold text-coral-400">山札は20枚か40枚か</h2>
+        <h2 className="text-lg font-bold text-coral-400">バクダンが出たら山札を入れ替える</h2>
         <div className="space-y-3 text-sm leading-relaxed text-foam-300">
           <p>
-            使う枚数には説が2つあり、本アプリではゲーム設定から切り替えられます。既定は20枚です。
+            ソロは1色20枚で遊びますが、その色は固定ではありません。
+            <strong className="text-gold-400">バクダン（10のペア）が出たら、♠♣の山札と♥♦の山札を持ち替えます。</strong>
+            次にまたバクダンが出れば、元の色に戻ります。
           </p>
           <p>
-            <strong className="text-foam-100">20枚（黒のみ）</strong>
-            <br />
-            ♠と♣のA〜10だけを使います。「他の色およびJ・Q・K・JOKERは使いません」と明記した記録に沿った構成です。
-            この場合、10のペアは必ず黒なので常にバクダンになります。
+            どちらの色でもA〜10が2枚ずつという構成は同じなので、
+            <strong>確率にも役の強さにも一切影響しません。</strong>
+            大きく場が動いた区切りを目に見える形で示す作法のようなものです。
           </p>
-          <p>
-            <strong className="text-foam-100">40枚（赤黒）</strong>
-            <br />
-            ♥♦も含めた4スートを使い、
-            <strong className="text-gold-400">バクダンは黒の10のペアだけ</strong>
-            になります。赤が絡む10のペアはひとつ下の「10ソロ」です。
-            <br />
-            <br />
-            この説の根拠は2つあります。ひとつは「一番強いのは
-            <strong>黒の</strong>
-            10のペア」という証言で、黒しか使っていないなら「黒の」と限定する意味がありません。
-            もうひとつは、ソロの原型とされる株札が40枚（各ランク4枚）であることです。
+          <p className="text-foam-500">
+            「一番強いのは<strong>黒の</strong>
+            10のペア」という証言が残っていますが、これはそのとき使っていた山札がたまたま黒だったということです。
+            赤の山札で遊んでいれば、赤の10のペアがバクダンになります。
           </p>
         </div>
       </section>

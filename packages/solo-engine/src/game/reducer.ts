@@ -1,6 +1,6 @@
 import type { Card } from '../card'
-import { MAX_PLAYERS, MIN_PLAYERS } from '../card'
-import { evaluateHand, isFlow } from '../hand'
+import { colorOfCard, MAX_PLAYERS, MIN_PLAYERS, oppositeColor } from '../card'
+import { evaluateHand, isBomb, isFlow } from '../hand'
 import { resolveShowdown, type ShowdownEntry } from '../showdown'
 import type {
   GameConfig,
@@ -51,6 +51,7 @@ export function createGame(config: GameConfig): GameState {
     roundNo: 0,
     carryOver: 0,
     startPlayerId: players[0]!.id,
+    deckColor: 'BLACK',
     phase: 'IDLE',
     round: null,
     history: [],
@@ -360,6 +361,12 @@ function settle(state: GameState, round: RoundState): GameState {
     payouts[p.id] = get(chips, p.id) - get(round.chipsAtStart, p.id)
   }
 
+  // バクダンが場に出たら、次のラウンドから山札の色を入れ替える。
+  // 公開されなかった手札は「出た」とみなさないので、ブラフ勝ちでは入れ替わらない。
+  const bombRevealed = revealed.some((id) => isBomb(evaluateHand(handOf(round, id), config.rules)))
+  const deckSwapped = config.rules.swapDeckOnBomb && bombRevealed
+  const nextDeckColor = deckSwapped ? oppositeColor(state.deckColor) : state.deckColor
+
   const result: RoundResult = {
     roundNo: round.roundNo,
     hands: round.hands,
@@ -370,6 +377,8 @@ function settle(state: GameState, round: RoundState): GameState {
     payouts,
     carryOverAfter: carryOver,
     bombCharge,
+    deckColor: state.deckColor,
+    deckSwapped,
   }
 
   return {
@@ -377,6 +386,7 @@ function settle(state: GameState, round: RoundState): GameState {
     chips,
     carryOver,
     startPlayerId: winner ?? state.startPlayerId,
+    deckColor: nextDeckColor,
     phase: 'RESULT',
     round,
     history: [...state.history, result],

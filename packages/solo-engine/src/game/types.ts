@@ -1,4 +1,4 @@
-import type { Card } from '../card'
+import type { Card, DeckColor } from '../card'
 import type { RuleVariant } from '../rules'
 import type { ShowdownResult } from '../showdown'
 
@@ -108,6 +108,10 @@ export interface RoundResult {
   readonly carryOverAfter: number
   /** バクダンによる追加徴収の 1 人あたりの額。発生しなければ 0 */
   readonly bombCharge: number
+  /** このラウンドで使った山札の色 */
+  readonly deckColor: DeckColor
+  /** バクダンが出て、次のラウンドから山札の色が入れ替わるか */
+  readonly deckSwapped: boolean
 }
 
 export interface GameState {
@@ -118,6 +122,8 @@ export interface GameState {
   readonly carryOver: number
   /** 次のラウンドで最初に行動するプレイヤー（前ラウンドの勝者） */
   readonly startPlayerId: PlayerId
+  /** 次のラウンドで使う山札の色。バクダンが出るたびに入れ替わる */
+  readonly deckColor: DeckColor
   readonly phase: Phase
   readonly round: RoundState | null
   readonly history: readonly RoundResult[]

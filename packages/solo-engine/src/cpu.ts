@@ -1,8 +1,8 @@
 import type { Card } from './card'
-import { cardId } from './card'
+import { cardId, colorOfCard, createDeck, suitsForColor } from './card'
 import { evaluateHand } from './hand'
 import type { Rng } from './rng'
-import { deckFor, type RuleVariant } from './rules'
+import type { RuleVariant } from './rules'
 import { callAmount, handCardsOf, maxRaise } from './game/selectors'
 import type { GameState, PlayerAction, PlayerId } from './game/types'
 
@@ -22,8 +22,10 @@ export function estimateWinRate(cards: readonly [Card, Card], rules: RuleVariant
   // 自分がシロクなら勝負を流せるので、負けることはない
   if (mine.category === 'FLOW') return 1
 
+  // 山札の色は手札から判断する（黒でも赤でもランクの構成は同じ）
+  const deck = createDeck(suitsForColor(colorOfCard(cards[0])))
   const used = new Set([cardId(cards[0]), cardId(cards[1])])
-  const rest = deckFor(rules).filter((card) => !used.has(cardId(card)))
+  const rest = deck.filter((card) => !used.has(cardId(card)))
 
   let score = 0
   let total = 0

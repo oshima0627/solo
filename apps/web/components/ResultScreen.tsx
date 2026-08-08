@@ -1,7 +1,14 @@
 'use client'
 
 import { useEffect } from 'react'
-import { evaluateHand, playerName, type GameState, type RoundResult } from '@solo/engine'
+import {
+  deckColorLabel,
+  evaluateHand,
+  oppositeColor,
+  playerName,
+  type GameState,
+  type RoundResult,
+} from '@solo/engine'
 import { playCue, type Cue } from '@/lib/sound'
 import { HandRow } from './Cards'
 import { SoundToggle } from './SoundToggle'
@@ -102,6 +109,15 @@ export function ResultScreen({
         {result.bombCharge > 0 ? (
           <p className="mt-2 text-sm text-gold-400">
             バクダン！ 1人あたり {result.bombCharge} を追加徴収
+          </p>
+        ) : null}
+        {result.deckSwapped ? (
+          <p className="mt-2 animate-pop rounded-xl bg-sea-900 px-4 py-2 text-sm text-foam-100">
+            山札を <span className="font-bold">{deckColorLabel(result.deckColor)}</span> から{' '}
+            <span className="font-bold text-coral-400">
+              {deckColorLabel(oppositeColor(result.deckColor))}
+            </span>{' '}
+            に入れ替えます
           </p>
         ) : null}
       </header>

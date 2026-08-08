@@ -1,7 +1,6 @@
-import type { Card } from './card'
-import { HAND_SIZE, MAX_PLAYERS, MIN_PLAYERS } from './card'
+import type { Card, DeckColor } from './card'
+import { createDeck, HAND_SIZE, MAX_PLAYERS, MIN_PLAYERS, suitsForColor } from './card'
 import type { Rng } from './rng'
-import { deckFor, DEFAULT_RULES, type RuleVariant } from './rules'
 
 /** Fisher-Yates。元の配列は破壊しない */
 export function shuffle<T>(items: readonly T[], rng: Rng): T[] {
@@ -25,7 +24,7 @@ export type DealtHands<Id extends string = string> = Record<Id, readonly [Card, 
 export function dealHands<Id extends string>(
   playerIds: readonly Id[],
   rng: Rng,
-  rules: RuleVariant = DEFAULT_RULES,
+  color: DeckColor = 'BLACK',
 ): DealtHands<Id> {
   if (playerIds.length < MIN_PLAYERS || playerIds.length > MAX_PLAYERS) {
     throw new RangeError(
@@ -36,7 +35,7 @@ export function dealHands<Id extends string>(
     throw new Error('プレイヤー ID が重複しています')
   }
 
-  const cards = deckFor(rules)
+  const cards = createDeck(suitsForColor(color))
   const needed = playerIds.length * HAND_SIZE
   if (needed > cards.length) {
     throw new RangeError(`山札 ${cards.length} 枚に対して ${needed} 枚を配ろうとしました`)
