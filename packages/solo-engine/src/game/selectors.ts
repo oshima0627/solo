@@ -83,5 +83,8 @@ export function standings(state: GameState): Standing[] {
  * reducer を純粋に保つため、乱数の消費はここで完結させる。
  */
 export function dealForRound(state: GameState, rng: Rng): GameEvent {
-  return { type: 'START_ROUND', hands: dealHands(eligiblePlayers(state), rng) }
+  return {
+    type: 'START_ROUND',
+    hands: dealHands(eligiblePlayers(state), rng, state.config.rules),
+  }
 }

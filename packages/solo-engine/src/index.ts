@@ -1,14 +1,19 @@
 export type { Card, Rank, Suit } from './card'
 export {
   RANKS,
-  SUITS,
-  DECK_SIZE,
+  BLACK_SUITS,
+  ALL_SUITS,
+  BLACK_DECK_SIZE,
+  FULL_DECK_SIZE,
   HAND_SIZE,
   MIN_PLAYERS,
   MAX_PLAYERS,
+  isRedSuit,
+  isBlackSuit,
   createCard,
   createDeck,
   cardId,
+  suitSymbol,
   formatCard,
   isSameCard,
 } from './card'
@@ -16,13 +21,16 @@ export {
 export type { Rng } from './rng'
 export { mulberry32, defaultRng } from './rng'
 
-export type { RuleVariant } from './rules'
+export type { RuleVariant, DeckVariant } from './rules'
 export {
   DEFAULT_RULES,
   STANDARD_PIN_RANKS,
   ALL_PIN_RANKS,
   soloOrder,
   withRules,
+  suitsFor,
+  deckFor,
+  deckSizeFor,
 } from './rules'
 
 export type { Hand, HandCategory } from './hand'

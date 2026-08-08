@@ -7,6 +7,7 @@ import {
   currentPlayerId,
   handCardsOf,
   handOf,
+  isBomb,
   maxRaise,
   playerName,
   type GameState,
@@ -113,7 +114,12 @@ export function TurnScreen({
         onPointerCancel={alwaysVisible ? undefined : () => setHeld(false)}
         onContextMenu={(e) => e.preventDefault()}
       >
-        <HandRow cards={cards} hidden={!shown} size="lg" />
+        <HandRow
+          cards={cards}
+          hidden={!shown}
+          size="lg"
+          highlight={shown && hand !== null && isBomb(hand)}
+        />
         {shown && hand ? (
           <p className="animate-pop text-3xl font-black text-gold-400">{hand.name}</p>
         ) : (

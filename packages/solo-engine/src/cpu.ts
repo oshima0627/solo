@@ -1,8 +1,8 @@
 import type { Card } from './card'
-import { cardId, createDeck } from './card'
+import { cardId } from './card'
 import { evaluateHand } from './hand'
 import type { Rng } from './rng'
-import type { RuleVariant } from './rules'
+import { deckFor, type RuleVariant } from './rules'
 import { callAmount, handCardsOf, maxRaise } from './game/selectors'
 import type { GameState, PlayerAction, PlayerId } from './game/types'
 
@@ -14,7 +14,7 @@ import type { GameState, PlayerAction, PlayerId } from './game/types'
  */
 
 /**
- * 自分の 2 枚を除いた 18 枚から作れる全 153 通りの相手手札と比較し、勝率を求める。
+ * 自分の 2 枚を除いた残りの山札から作れる相手手札すべてと比較し、勝率を求める。
  * 引き分けは 0.5、相手がシロク（流局）の場合も勝ちでも負けでもないので 0.5 とする。
  */
 export function estimateWinRate(cards: readonly [Card, Card], rules: RuleVariant): number {
@@ -23,7 +23,7 @@ export function estimateWinRate(cards: readonly [Card, Card], rules: RuleVariant
   if (mine.category === 'FLOW') return 1
 
   const used = new Set([cardId(cards[0]), cardId(cards[1])])
-  const rest = createDeck().filter((card) => !used.has(cardId(card)))
+  const rest = deckFor(rules).filter((card) => !used.has(cardId(card)))
 
   let score = 0
   let total = 0

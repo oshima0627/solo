@@ -1,6 +1,7 @@
 import type { Card } from './card'
-import { createDeck, DECK_SIZE, HAND_SIZE, MAX_PLAYERS, MIN_PLAYERS } from './card'
+import { HAND_SIZE, MAX_PLAYERS, MIN_PLAYERS } from './card'
 import type { Rng } from './rng'
+import { deckFor, DEFAULT_RULES, type RuleVariant } from './rules'
 
 /** Fisher-Yates。元の配列は破壊しない */
 export function shuffle<T>(items: readonly T[], rng: Rng): T[] {
@@ -18,12 +19,13 @@ export function shuffle<T>(items: readonly T[], rng: Rng): T[] {
 export type DealtHands<Id extends string = string> = Record<Id, readonly [Card, Card]>
 
 /**
- * 毎ラウンド 20 枚すべてを戻して再シャッフルし、各プレイヤーに 2 枚ずつ配る。
+ * 毎ラウンド山札すべてを戻して再シャッフルし、各プレイヤーに 2 枚ずつ配る。
  * 山札の引き継ぎは行わない。
  */
 export function dealHands<Id extends string>(
   playerIds: readonly Id[],
   rng: Rng,
+  rules: RuleVariant = DEFAULT_RULES,
 ): DealtHands<Id> {
   if (playerIds.length < MIN_PLAYERS || playerIds.length > MAX_PLAYERS) {
     throw new RangeError(
@@ -34,12 +36,13 @@ export function dealHands<Id extends string>(
     throw new Error('プレイヤー ID が重複しています')
   }
 
+  const cards = deckFor(rules)
   const needed = playerIds.length * HAND_SIZE
-  if (needed > DECK_SIZE) {
-    throw new RangeError(`山札 ${DECK_SIZE} 枚に対して ${needed} 枚を配ろうとしました`)
+  if (needed > cards.length) {
+    throw new RangeError(`山札 ${cards.length} 枚に対して ${needed} 枚を配ろうとしました`)
   }
 
-  const deck = shuffle(createDeck(), rng)
+  const deck = shuffle(cards, rng)
   const hands = {} as Record<Id, readonly [Card, Card]>
   playerIds.forEach((id, i) => {
     hands[id] = [deck[i * HAND_SIZE]!, deck[i * HAND_SIZE + 1]!] as const

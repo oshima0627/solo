@@ -1,28 +1,43 @@
 'use client'
 
-import type { Card } from '@solo/engine'
-
-const SUIT_SYMBOL = { S: '♠', C: '♣' } as const
+import { isRedSuit, suitSymbol, type Card } from '@solo/engine'
 
 function rankLabel(card: Card): string {
   return card.rank === 1 ? 'A' : String(card.rank)
 }
 
-export function CardFace({ card, size = 'md' }: { card: Card; size?: 'sm' | 'md' | 'lg' }) {
+export function CardFace({
+  card,
+  size = 'md',
+  highlight = false,
+}: {
+  card: Card
+  size?: 'sm' | 'md' | 'lg'
+  /** バクダンのカードを金色で強調する */
+  highlight?: boolean
+}) {
   const box = {
     sm: 'h-20 w-14 text-xl',
     md: 'h-32 w-22 text-4xl',
     lg: 'h-40 w-28 text-5xl',
   }[size]
 
+  const red = isRedSuit(card.suit)
+
   return (
     <div
-      className={`${box} flex flex-col items-center justify-center rounded-xl bg-card font-bold text-card-ink shadow-lg`}
+      className={`${box} flex flex-col items-center justify-center rounded-xl font-bold shadow-lg ${
+        highlight
+          ? 'bg-gold-400 text-card-ink ring-2 ring-white/70'
+          : red
+            ? 'bg-card text-card-red'
+            : 'bg-card text-card-ink'
+      }`}
       // 色だけに頼らず、スート記号とランクの両方で識別できるようにする
-      aria-label={`${SUIT_SYMBOL[card.suit]}の${rankLabel(card)}`}
+      aria-label={`${suitSymbol(card.suit)}の${rankLabel(card)}`}
     >
       <span className="leading-none tabular-nums">{rankLabel(card)}</span>
-      <span className="mt-1 text-[0.6em] leading-none opacity-70">{SUIT_SYMBOL[card.suit]}</span>
+      <span className="mt-1 text-[0.6em] leading-none opacity-80">{suitSymbol(card.suit)}</span>
     </div>
   )
 }
@@ -51,12 +66,15 @@ export function HandRow({
   hidden = false,
   size = 'md',
   animate = false,
+  highlight = false,
 }: {
   cards: readonly Card[] | null
   hidden?: boolean
   size?: 'sm' | 'md' | 'lg'
   /** 公開時にめくる演出を付ける */
   animate?: boolean
+  /** バクダンのカードを金色で強調する */
+  highlight?: boolean
 }) {
   return (
     <div className="flex justify-center gap-3">
@@ -68,7 +86,7 @@ export function HandRow({
               className={animate ? 'animate-flip' : undefined}
               style={animate ? { animationDelay: `${i * 90}ms` } : undefined}
             >
-              <CardFace card={card} size={size} />
+              <CardFace card={card} size={size} highlight={highlight} />
             </div>
           ))}
     </div>

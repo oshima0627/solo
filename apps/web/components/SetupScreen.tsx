@@ -8,6 +8,7 @@ import {
   MIN_PLAYERS,
   STANDARD_PIN_RANKS,
   type BettingMode,
+  type DeckVariant,
   type EndCondition,
   type GameConfig,
 } from '@solo/engine'
@@ -33,6 +34,7 @@ export function SetupScreen({
   const [initialChips, setInitialChips] = useState(50)
   const [anteAmount, setAnteAmount] = useState(1)
   const [showRules, setShowRules] = useState(false)
+  const [deck, setDeck] = useState<DeckVariant>(DEFAULT_RULES.deck)
   const [highPinzoro, setHighPinzoro] = useState(
     DEFAULT_RULES.pinzoroPosition === 'secondHighest',
   )
@@ -68,6 +70,7 @@ export function SetupScreen({
       initialChips,
       anteAmount,
       rules: {
+        deck,
         pinzoroPosition: highPinzoro ? 'secondHighest' : 'lowestSolo',
         pinRanks: allPins ? ALL_PIN_RANKS : STANDARD_PIN_RANKS,
         gyakuSolo,
@@ -199,6 +202,23 @@ export function SetupScreen({
                 ソロには公式ルールがなく、地域やグループごとに証言が分かれています。
                 割れている箇所はここで切り替えられます。
               </p>
+              <Field
+                label="山札"
+                hint={
+                  deck === 'BLACK20'
+                    ? '黒（♠♣）のA〜10だけを使う20枚。「他の色は使わない」という記録に沿った構成です。'
+                    : '赤も含めた4スート40枚。バクダンは黒の10のペアだけになります。原型とされる株札が40枚であることに沿った構成です。'
+                }
+              >
+                <Segmented
+                  value={deck}
+                  onChange={setDeck}
+                  options={[
+                    { value: 'BLACK20', label: '20枚（黒のみ）' },
+                    { value: 'FULL40', label: '40枚（赤黒）' },
+                  ]}
+                />
+              </Field>
               <Toggle
                 label="ピンゾロを2番目に強くする"
                 hint="既定ではソロの中で最弱（多数派の証言）"

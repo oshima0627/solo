@@ -15,6 +15,8 @@
   --color-jade-400: #3fd0a0;
   --color-card: #f7f0e2;
   --color-card-ink: #1b2026;
+  /* ♥♦ 用。カード地が生成りなので、彩度を落として目に痛くしない */
+  --color-card-red: #c02f28;
 
   --font-sans:
     'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Noto Sans JP', system-ui, sans-serif;

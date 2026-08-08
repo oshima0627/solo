@@ -1,4 +1,12 @@
-import type { Rank } from './card'
+import type { Card, Rank, Suit } from './card'
+import { ALL_SUITS, BLACK_SUITS, createDeck } from './card'
+
+/**
+ * 山札の構成。
+ * - 'BLACK20': 黒 2 スートの A〜10、計 20 枚
+ * - 'FULL40' : 4 スートの A〜10、計 40 枚。バクダンは黒の 10 ペアに限られる
+ */
+export type DeckVariant = 'BLACK20' | 'FULL40'
 
 /**
  * ソロには公式ルールが存在せず、証言によって内容が割れている箇所がある。
@@ -6,6 +14,9 @@ import type { Rank } from './card'
  * 各項目の既定値は、調査で最も多数派だった記述に従っている。
  */
 export interface RuleVariant {
+  /** 山札の構成。20 枚（黒のみ）か 40 枚（4 スート）か */
+  readonly deck: DeckVariant
+
   /**
    * ピンゾロ（A-A）の強さ。
    * - 'lowestSolo'   : ソロの中で最弱（10ソロ → … → 2ソロ → 1ソロ）※多数派
@@ -36,6 +47,7 @@ export const STANDARD_PIN_RANKS: readonly Rank[] = [10, 9, 5]
 export const ALL_PIN_RANKS: readonly Rank[] = [2, 3, 4, 5, 6, 7, 8, 9, 10]
 
 export const DEFAULT_RULES: RuleVariant = {
+  deck: 'BLACK20',
   pinzoroPosition: 'lowestSolo',
   pinRanks: STANDARD_PIN_RANKS,
   gyakuSolo: true,
@@ -57,4 +69,17 @@ export function soloOrder(rules: RuleVariant): readonly Rank[] {
 
 export function withRules(overrides: Partial<RuleVariant>): RuleVariant {
   return { ...DEFAULT_RULES, ...overrides }
+}
+
+export function suitsFor(rules: RuleVariant): readonly Suit[] {
+  return rules.deck === 'FULL40' ? ALL_SUITS : BLACK_SUITS
+}
+
+/** そのルールでの山札。毎ラウンド全枚数を戻して使う */
+export function deckFor(rules: RuleVariant): Card[] {
+  return createDeck(suitsFor(rules))
+}
+
+export function deckSizeFor(rules: RuleVariant): number {
+  return suitsFor(rules).length * 10
 }

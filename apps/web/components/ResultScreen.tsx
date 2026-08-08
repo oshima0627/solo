@@ -83,6 +83,7 @@ export function ResultScreen({
   const info = headline(game, result)
   const revealed = new Set(result.revealed)
   const isBomb = result.bombCharge > 0
+  const bombPlayer = result.outcome.outcome === 'WIN' ? result.outcome.bombPlayer : null
 
   return (
     <Screen>
@@ -127,7 +128,15 @@ export function ResultScreen({
                   {payout > 0 ? `+${payout}` : payout} → {game.chips[player.id] ?? 0}
                 </p>
               </div>
-              {cards ? <HandRow cards={cards} hidden={!shown} size="sm" animate={shown} /> : null}
+              {cards ? (
+                <HandRow
+                  cards={cards}
+                  hidden={!shown}
+                  size="sm"
+                  animate={shown}
+                  highlight={shown && player.id === bombPlayer}
+                />
+              ) : null}
             </Panel>
           )
         })}
