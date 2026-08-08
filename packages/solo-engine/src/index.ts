@@ -40,3 +40,5 @@ export { resolveShowdown, isCarryOver } from './showdown.js'
 
 export type { DealtHands } from './deal.js'
 export { shuffle, dealHands } from './deal.js'
+
+export * from './game/index.js'
