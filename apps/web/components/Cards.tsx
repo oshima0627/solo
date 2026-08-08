@@ -1,25 +1,92 @@
 'use client'
 
-import { isRedSuit, suitSymbol, type Card } from '@solo/engine'
+import { isRedSuit, suitSymbol, type Card, type Rank } from '@solo/engine'
 
 type Size = 'sm' | 'md' | 'lg'
 
-const BOX: Record<Size, string> = {
-  sm: 'h-[4.5rem] w-[3.25rem] rounded-[3px]',
-  md: 'h-28 w-20 rounded-[5px]',
-  lg: 'h-40 w-[7rem] rounded-[6px]',
+/** 実際のトランプと同じ 2.5 : 3.5 の比率 */
+const WIDTH: Record<Size, string> = {
+  sm: 'w-[3.25rem]',
+  md: 'w-[4.75rem]',
+  lg: 'w-[6.75rem]',
 }
 
-const RANK_SIZE: Record<Size, string> = {
-  sm: 'text-2xl',
-  md: 'text-4xl',
-  lg: 'text-5xl',
+const RADIUS: Record<Size, string> = {
+  sm: 'rounded-[3px]',
+  md: 'rounded-[4px]',
+  lg: 'rounded-[6px]',
 }
 
-const SUIT_SIZE: Record<Size, string> = {
-  sm: 'text-[0.6rem] left-1 top-1',
-  md: 'text-sm left-2 top-1.5',
-  lg: 'text-base left-2.5 top-2',
+/**
+ * ピップ（スート記号）の配置。
+ * 英米式のトランプに倣った並びで、A〜10 まですべて実物と同じ位置に置く。
+ * 座標は viewBox 100 × 140 の中の値。中心より下のピップは実物同様 180 度回す。
+ */
+const COL = { left: 32, center: 50, right: 68 }
+const ROW = {
+  top: 30,
+  upper: 56.7,
+  lower: 83.3,
+  bottom: 110,
+  middle: 70,
+  /** 上段と中段のあいだ（7・8 の中央ピップ） */
+  betweenUpper: 50,
+  /** 中段と下段のあいだ */
+  betweenLower: 90,
+  /** 10 の中央ピップ。1段目と2段目、3段目と4段目のあいだ */
+  tenUpper: 43.3,
+  tenLower: 96.7,
+}
+
+const SIDE_THREE: [number, number][] = [
+  [COL.left, ROW.top],
+  [COL.right, ROW.top],
+  [COL.left, ROW.middle],
+  [COL.right, ROW.middle],
+  [COL.left, ROW.bottom],
+  [COL.right, ROW.bottom],
+]
+
+const SIDE_FOUR: [number, number][] = [
+  [COL.left, ROW.top],
+  [COL.right, ROW.top],
+  [COL.left, ROW.upper],
+  [COL.right, ROW.upper],
+  [COL.left, ROW.lower],
+  [COL.right, ROW.lower],
+  [COL.left, ROW.bottom],
+  [COL.right, ROW.bottom],
+]
+
+const PIPS: Record<Rank, [number, number][]> = {
+  1: [[COL.center, ROW.middle]],
+  2: [
+    [COL.center, ROW.top],
+    [COL.center, ROW.bottom],
+  ],
+  3: [
+    [COL.center, ROW.top],
+    [COL.center, ROW.middle],
+    [COL.center, ROW.bottom],
+  ],
+  4: [
+    [COL.left, ROW.top],
+    [COL.right, ROW.top],
+    [COL.left, ROW.bottom],
+    [COL.right, ROW.bottom],
+  ],
+  5: [
+    [COL.left, ROW.top],
+    [COL.right, ROW.top],
+    [COL.center, ROW.middle],
+    [COL.left, ROW.bottom],
+    [COL.right, ROW.bottom],
+  ],
+  6: SIDE_THREE,
+  7: [...SIDE_THREE, [COL.center, ROW.betweenUpper]],
+  8: [...SIDE_THREE, [COL.center, ROW.betweenUpper], [COL.center, ROW.betweenLower]],
+  9: [...SIDE_FOUR, [COL.center, ROW.middle]],
+  10: [...SIDE_FOUR, [COL.center, ROW.tenUpper], [COL.center, ROW.tenLower]],
 }
 
 function rankLabel(card: Card): string {
@@ -36,23 +103,60 @@ export function CardFace({
   /** バクダンの札を目立たせる */
   highlight?: boolean
 }) {
-  const red = isRedSuit(card.suit)
-  const tone = red ? 'text-vermilion' : 'text-ink'
+  const label = rankLabel(card)
+  const suit = suitSymbol(card.suit)
+  const color = isRedSuit(card.suit) ? 'var(--color-vermilion)' : 'var(--color-ink)'
+  const ace = card.rank === 1
+
+  // 「10」だけ2桁ぶん詰める
+  const indexSize = label.length > 1 ? 15 : 18
+
+  const cornerIndex = (
+    <g fill={color}>
+      <text
+        x="12"
+        y="23"
+        fontSize={indexSize}
+        fontFamily="var(--font-serif)"
+        textAnchor="middle"
+        fontWeight="600"
+      >
+        {label}
+      </text>
+      <text x="12" y="37" fontSize="12" textAnchor="middle">
+        {suit}
+      </text>
+    </g>
+  )
 
   return (
     <div
-      className={`${BOX[size]} relative flex items-center justify-center border shadow-[0_1px_2px_rgba(25,23,19,0.14)] ${
-        highlight ? 'border-brass bg-[#f6edd6]' : 'border-rule-strong bg-paper-raised'
+      className={`${WIDTH[size]} ${RADIUS[size]} aspect-[5/7] overflow-hidden border shadow-[0_1px_3px_rgba(25,23,19,0.16)] ${
+        highlight ? 'border-brass bg-[#f8f0da]' : 'border-rule-strong bg-[#fdfcf9]'
       }`}
-      // 色だけに頼らず、スート記号とランクの両方で識別できるようにする
-      aria-label={`${suitSymbol(card.suit)}の${rankLabel(card)}`}
+      aria-label={`${suit}の${label}`}
     >
-      <span className={`absolute ${SUIT_SIZE[size]} leading-none ${tone}`}>
-        {suitSymbol(card.suit)}
-      </span>
-      <span className={`font-serif leading-none ${RANK_SIZE[size]} ${tone}`}>
-        {rankLabel(card)}
-      </span>
+      <svg viewBox="0 0 100 140" className="h-full w-full" aria-hidden="true">
+        {cornerIndex}
+        {/* 実物と同じく、反対側の角にも上下逆さまの指標を入れる */}
+        <g transform="rotate(180 50 70)">{cornerIndex}</g>
+
+        {PIPS[card.rank].map(([x, y]) => (
+          <text
+            key={`${x}-${y}`}
+            x={x}
+            y={y}
+            fill={color}
+            fontSize={ace ? 44 : 20}
+            textAnchor="middle"
+            dominantBaseline="central"
+            // 中心より下のピップは実物と同様に上下を逆にする
+            transform={y > ROW.middle ? `rotate(180 ${x} ${y})` : undefined}
+          >
+            {suit}
+          </text>
+        ))}
+      </svg>
     </div>
   )
 }
@@ -60,13 +164,36 @@ export function CardFace({
 export function CardBack({ size = 'md' }: { size?: Size }) {
   return (
     <div
-      className={`${BOX[size]} border border-rule-strong bg-paper-sunk`}
-      style={{
-        backgroundImage:
-          'repeating-linear-gradient(45deg, rgba(25,23,19,0.07) 0 2px, transparent 2px 7px)',
-      }}
+      className={`${WIDTH[size]} ${RADIUS[size]} aspect-[5/7] overflow-hidden border border-rule-strong bg-[#fdfcf9] shadow-[0_1px_3px_rgba(25,23,19,0.16)]`}
       aria-label="伏せられたカード"
-    />
+    >
+      <svg viewBox="0 0 100 140" className="h-full w-full" aria-hidden="true">
+        <defs>
+          {/* 実物の裏面によくある斜めの網目 */}
+          <pattern id="card-back" width="7" height="7" patternUnits="userSpaceOnUse">
+            <path
+              d="M0 7 L7 0 M0 0 L7 7"
+              stroke="var(--color-vermilion)"
+              strokeWidth="0.9"
+              opacity="0.38"
+            />
+          </pattern>
+        </defs>
+        {/* 実物の裏面と同じく、外周に白い余白を残す */}
+        <rect x="5" y="5" width="90" height="130" rx="3" fill="url(#card-back)" />
+        <rect
+          x="5"
+          y="5"
+          width="90"
+          height="130"
+          rx="3"
+          fill="none"
+          stroke="var(--color-vermilion)"
+          strokeWidth="1.4"
+          opacity="0.55"
+        />
+      </svg>
+    </div>
   )
 }
 
