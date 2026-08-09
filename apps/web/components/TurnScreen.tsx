@@ -138,7 +138,7 @@ export function TurnScreen({
             className={
               actions.length === 3
                 ? 'space-y-2.5'
-                : 'grid grid-cols-2 gap-2.5 wide:grid-cols-1 land:grid-cols-1'
+                : 'grid grid-cols-2 gap-2.5 land:grid-cols-1'
             }
           >
             {actions

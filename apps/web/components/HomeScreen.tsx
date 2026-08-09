@@ -44,8 +44,8 @@ export function HomeScreen({
       }
     >
       <div className="flex flex-1 flex-col justify-center gap-8 wide:flex-row wide:items-center wide:gap-14 land:flex-row land:items-center land:gap-7">
-        <div className="animate-rise wide:min-w-[24rem] wide:flex-1 land:flex-1">
-          <h1 className="font-serif text-[5.5rem] leading-[0.85] tracking-[-0.02em] wide:text-8xl land:text-6xl">
+        <div className="animate-rise wide:min-w-[22rem] wide:flex-1 land:flex-1">
+          <h1 className="font-serif text-[5.5rem] leading-[0.85] tracking-[-0.02em] wide:text-[6.5rem] land:text-6xl">
             ソロ
           </h1>
           <p className="mt-6 text-sm leading-[1.95] text-ink-soft wide:mt-8 wide:text-base wide:leading-[2.1] land:mt-4 land:text-xs land:leading-[1.8]">

@@ -188,8 +188,9 @@ export function Stat({ label, value }: { label: string; value: ReactNode }) {
 /**
  * 画面の骨格。
  *
- * 縦画面では 見出し → 本文 → 操作 の 1 列。
- * 横持ちのスマホでは高さが足りないので、本文と操作を左右に分ける。
+ * 見出し → 本文 → 操作 の 1 列。操作は常に下に置き、
+ * 広い画面では横に広がりすぎないよう幅を絞って中央に寄せる。
+ * 横持ちのスマホだけは高さが足りないので、本文と操作を左右に分ける。
  */
 export function Screen({
   header,
@@ -203,12 +204,12 @@ export function Screen({
   return (
     // 横持ちでは高さを画面ぴったりに固定する。そうしないと本文の伸びに合わせて
     // 全体が縦に伸び、右側の操作列が画面外へ出てしまう。
-    <div className="mx-auto flex min-h-dvh w-full max-w-md flex-col gap-5 px-5 pb-7 pt-6 wide:max-w-5xl wide:gap-8 wide:px-10 wide:pb-12 wide:pt-10 land:h-dvh land:max-w-3xl land:gap-3 land:overflow-hidden land:pb-4 land:pt-3">
+    <div className="mx-auto flex min-h-dvh w-full max-w-md flex-col gap-5 px-5 pb-7 pt-6 wide:max-w-3xl wide:gap-8 wide:px-10 wide:pb-14 wide:pt-10 land:h-dvh land:max-w-3xl land:gap-3 land:overflow-hidden land:pb-4 land:pt-3">
       {header}
-      <div className="flex min-h-0 flex-1 flex-col gap-5 wide:flex-row wide:gap-14 land:flex-row land:gap-7">
+      <div className="flex min-h-0 flex-1 flex-col gap-5 wide:gap-10 land:flex-row land:gap-7">
         <div className="flex min-h-0 flex-1 flex-col land:overflow-y-auto">{children}</div>
         {footer ? (
-          <div className="flex shrink-0 flex-col justify-end gap-2.5 wide:w-64 wide:justify-center land:w-56 land:justify-center">
+          <div className="flex w-full shrink-0 flex-col justify-end gap-2.5 wide:mx-auto wide:w-80 land:w-56 land:justify-center">
             {footer}
           </div>
         ) : null}
