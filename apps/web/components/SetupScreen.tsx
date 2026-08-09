@@ -179,10 +179,25 @@ export function SetupScreen({
             </Field>
           ) : null}
           <Field label="初期チップ">
-            <Stepper value={initialChips} min={5} max={500} step={5} onChange={setInitialChips} />
+            <Stepper
+              value={initialChips}
+              min={5}
+              max={500}
+              step={5}
+              onChange={(next) => {
+                setInitialChips(next)
+                // 場代が初期チップを上回るとゲームを作れないので、下げるときは道連れにする
+                setAnteAmount((ante) => Math.min(ante, next))
+              }}
+            />
           </Field>
           <Field label="場代">
-            <Stepper value={anteAmount} min={1} max={10} onChange={setAnteAmount} />
+            <Stepper
+              value={anteAmount}
+              min={1}
+              max={Math.min(10, initialChips)}
+              onChange={setAnteAmount}
+            />
           </Field>
         </section>
 

@@ -101,6 +101,30 @@ describe('レイズ方式：ブラフ勝ち', () => {
     expect(s.chips).toEqual({ a: 102, b: 99, c: 99 })
   })
 
+  it('自分の手番が来る前に全員が降りても勝てる', () => {
+    // 一度も行動していないプレイヤーは PENDING のままなので、
+    // 勝負に残っている人を 'PLAYING' だけで絞ると勝者がいなくなる
+    let s = start(setup(RAISE_MODE), { a: [3, 7], b: [2, 8], c: [10, 10] })
+    s = act(s, 'a', FOLD)
+    s = act(s, 'b', FOLD)
+
+    const result = s.history.at(-1)!
+    expect(result.outcome.outcome).toBe('WIN_BY_FOLD')
+    if (result.outcome.outcome === 'WIN_BY_FOLD') {
+      expect(result.outcome.winner).toBe('c')
+    }
+    expect(s.chips).toEqual({ a: 99, b: 99, c: 102 })
+    expect(s.carryOver).toBe(0)
+  })
+
+  it('2人でも、相手が降りればもう1人が勝つ', () => {
+    let s = start(setup(RAISE_MODE, ['a', 'b']), { a: [3, 7], b: [1, 9] })
+    s = act(s, 'a', FOLD)
+
+    expect(s.history.at(-1)!.outcome.outcome).toBe('WIN_BY_FOLD')
+    expect(s.chips).toEqual({ a: 99, b: 101 })
+  })
+
   it('ブラフ勝ちではバクダンの追加徴収が起きない', () => {
     let s = start(setup(RAISE_MODE), { a: [10, 10], b: [1, 9], c: [1, 8] })
     s = act(s, 'a', raise(5))

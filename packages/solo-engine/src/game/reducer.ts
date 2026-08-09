@@ -304,7 +304,11 @@ function nextActorIndex(round: RoundState, chips: Chips): number | null {
 
 function settle(state: GameState, round: RoundState): GameState {
   const config = state.config
-  const contenders = round.order.filter((id) => round.status[id] === 'PLAYING')
+  // 降りていない人が勝負に残っている人。
+  // レイズ方式では自分の手番が来る前に他の全員が降りることがあり、
+  // その人は一度も行動していない（PENDING のまま）ので、
+  // 'PLAYING' だけで絞ると勝者がいなくなってしまう。
+  const contenders = round.order.filter((id) => round.status[id] !== 'FOLDED')
   const folded = round.order.filter((id) => round.status[id] === 'FOLDED')
 
   // レイズ方式で残り 1 人になった場合、手札は公開せずに勝つ

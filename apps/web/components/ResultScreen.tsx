@@ -84,8 +84,10 @@ export function ResultScreen({
 
   const info = headline(game, result)
   const revealed = new Set(result.revealed)
-  const isBomb = result.bombCharge > 0
+  const folded = new Set(result.folded)
   const bombPlayer = result.outcome.outcome === 'WIN' ? result.outcome.bombPlayer : null
+  // 追加徴収を 0 に設定していてもバクダンはバクダンなので、額ではなく役で判定する
+  const isBomb = bombPlayer !== null
 
   return (
     <Screen
@@ -125,7 +127,7 @@ export function ResultScreen({
           {info.callout}
         </p>
         {info.note ? <p className="mt-4 text-xs text-ink-faint land:mt-2">{info.note}</p> : null}
-        {isBomb ? (
+        {isBomb && result.bombCharge > 0 ? (
           <p className="tnum mt-4 text-sm text-ink-soft land:mt-2">
             1人あたり <span className="font-bold text-vermilion">{result.bombCharge}</span> を追加徴収
           </p>
@@ -156,7 +158,15 @@ export function ResultScreen({
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-bold">{player.name}</p>
                 <p className="mt-0.5 text-xs text-ink-faint">
-                  {hand ? hand.name : cards ? '降りた' : '不参加'}
+                  {/* 降りたかどうかは公開の有無ではなく folded で判断する。
+                      ブラフ勝ちでは勝者も手札を公開しないため */}
+                  {hand
+                    ? hand.name
+                    : folded.has(player.id)
+                      ? '降りた'
+                      : cards
+                        ? '非公開'
+                        : '不参加'}
                 </p>
               </div>
               <div className="tnum text-right">
