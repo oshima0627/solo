@@ -1,0 +1,15 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "solo",
+  "compatibility_date": "2026-08-01",
+  // バックエンドを持たない静的サイトなので、Worker のコードは置かず
+  // ビルド成果物をそのまま配信する。
+  //
+  // Cloudflare Workers Builds はリポジトリのルートでコマンドを実行するため、
+  // 設定ファイルもルートに置く。これで Deploy command は `npx wrangler deploy`
+  // のままでよい。
+  "assets": {
+    "directory": "./apps/web/out",
+    "not_found_handling": "404-page"
+  }
+}
