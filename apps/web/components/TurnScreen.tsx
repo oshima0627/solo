@@ -126,6 +126,7 @@ export function TurnScreen({
             <div className="space-y-2 border-t border-rule pt-4 land:border-none land:pt-0">
               <span className="label block">レイズ額</span>
               <Stepper
+                label="レイズ額"
                 value={Math.min(raiseAmount, raiseMax)}
                 min={1}
                 max={raiseMax}

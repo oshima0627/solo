@@ -116,6 +116,7 @@ export function SetupScreen({
 
           <Field label="人数">
             <Stepper
+              label="人数"
               value={playerCount}
               min={MIN_PLAYERS}
               max={MAX_PLAYERS}
@@ -204,11 +205,12 @@ export function SetupScreen({
           />
           {endType === 'ROUNDS' ? (
             <Field label="局数">
-              <Stepper value={rounds} min={1} max={50} onChange={setRounds} />
+              <Stepper label="局数" value={rounds} min={1} max={50} onChange={setRounds} />
             </Field>
           ) : null}
           <Field label="初期チップ">
             <Stepper
+              label="初期チップ"
               value={initialChips}
               min={5}
               max={500}
@@ -222,6 +224,7 @@ export function SetupScreen({
           </Field>
           <Field label="場代">
             <Stepper
+              label="場代"
               value={anteAmount}
               min={1}
               max={Math.min(10, initialChips)}
@@ -282,6 +285,7 @@ export function SetupScreen({
               <div className="pt-4">
                 <Field label="バクダンの追加徴収">
                   <Stepper
+                    label="バクダンの追加徴収"
                     value={bombExtraCharge}
                     min={0}
                     max={20}

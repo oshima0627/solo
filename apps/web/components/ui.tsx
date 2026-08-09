@@ -1,6 +1,6 @@
 'use client'
 
-import { useId, type ButtonHTMLAttributes, type ReactNode } from 'react'
+import { useId, useState, type ButtonHTMLAttributes, type ReactNode } from 'react'
 
 type Variant = 'primary' | 'secondary' | 'quiet'
 
@@ -133,41 +133,76 @@ export function Toggle({
   )
 }
 
+/**
+ * 数値の増減。＋−で刻むだけでなく、直接打ち込んでも変えられる。
+ * 打っている途中は下書きとして保持し、確定（Enter か離れたとき）に
+ * はじめて範囲へ丸める。1文字打つたびに丸めると入力が壊れるため。
+ */
 export function Stepper({
+  label,
   value,
   min,
   max,
   step = 1,
   onChange,
 }: {
+  label: string
   value: number
   min: number
   max: number
   step?: number
   onChange: (value: number) => void
 }) {
+  const [draft, setDraft] = useState<string | null>(null)
   const clamp = (n: number) => Math.min(max, Math.max(min, n))
+
+  const commit = () => {
+    const parsed = Number.parseInt(draft ?? '', 10)
+    if (Number.isFinite(parsed)) onChange(clamp(parsed))
+    setDraft(null)
+  }
+
+  const nudge = (delta: number) => {
+    setDraft(null)
+    onChange(clamp(value + delta))
+  }
+
   const arrow =
-    'flex h-11 w-11 shrink-0 items-center justify-center border border-rule-strong text-lg text-ink transition-colors active:bg-paper-sunk disabled:border-rule disabled:text-rule-strong'
+    'flex h-11 w-11 shrink-0 items-center justify-center rounded-sm border border-rule-strong text-lg text-ink transition-colors active:bg-paper-sunk disabled:border-rule disabled:text-rule-strong'
 
   return (
     <div className="flex items-center gap-4">
       <button
         type="button"
-        aria-label="減らす"
-        onClick={() => onChange(clamp(value - step))}
+        aria-label={`${label}を減らす`}
+        onClick={() => nudge(-step)}
         disabled={value <= min}
-        className={`${arrow} rounded-sm`}
+        className={arrow}
       >
         −
       </button>
-      <span className="tnum flex-1 text-center font-serif text-3xl leading-none">{value}</span>
+      <input
+        type="text"
+        inputMode="numeric"
+        aria-label={label}
+        value={draft ?? String(value)}
+        onChange={(e) => setDraft(e.target.value.replace(/[^0-9]/g, ''))}
+        onFocus={(e) => e.currentTarget.select()}
+        onBlur={commit}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            commit()
+            e.currentTarget.blur()
+          }
+        }}
+        className="tnum w-full min-w-0 flex-1 border-b border-transparent bg-transparent text-center font-serif text-3xl leading-none outline-none transition-colors focus:border-vermilion"
+      />
       <button
         type="button"
-        aria-label="増やす"
-        onClick={() => onChange(clamp(value + step))}
+        aria-label={`${label}を増やす`}
+        onClick={() => nudge(step)}
         disabled={value >= max}
-        className={`${arrow} rounded-sm`}
+        className={arrow}
       >
         ＋
       </button>
