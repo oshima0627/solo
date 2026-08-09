@@ -185,6 +185,34 @@ export function Stat({ label, value }: { label: string; value: ReactNode }) {
   )
 }
 
-export function Screen({ children }: { children: ReactNode }) {
-  return <div className="flex min-h-dvh flex-col gap-6 px-5 pb-7 pt-6">{children}</div>
+/**
+ * 画面の骨格。
+ *
+ * 縦画面では 見出し → 本文 → 操作 の 1 列。
+ * 横持ちのスマホでは高さが足りないので、本文と操作を左右に分ける。
+ */
+export function Screen({
+  header,
+  footer,
+  children,
+}: {
+  header?: ReactNode
+  footer?: ReactNode
+  children: ReactNode
+}) {
+  return (
+    // 横持ちでは高さを画面ぴったりに固定する。そうしないと本文の伸びに合わせて
+    // 全体が縦に伸び、右側の操作列が画面外へ出てしまう。
+    <div className="mx-auto flex min-h-dvh w-full max-w-md flex-col gap-5 px-5 pb-7 pt-6 land:h-dvh land:max-w-3xl land:gap-3 land:overflow-hidden land:pb-4 land:pt-3">
+      {header}
+      <div className="flex min-h-0 flex-1 flex-col gap-5 land:flex-row land:gap-7">
+        <div className="flex min-h-0 flex-1 flex-col land:overflow-y-auto">{children}</div>
+        {footer ? (
+          <div className="flex shrink-0 flex-col justify-end gap-2.5 land:w-56 land:justify-center">
+            {footer}
+          </div>
+        ) : null}
+      </div>
+    </div>
+  )
 }

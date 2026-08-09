@@ -36,7 +36,7 @@ function Section({
 
 export default function RulesPage() {
   return (
-    <main className="flex min-h-dvh flex-col gap-10 px-5 pb-12 pt-6">
+    <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col gap-10 px-5 pb-12 pt-6">
       <header className="flex items-baseline justify-between border-b border-rule pb-3">
         <span className="label">ルール</span>
         <Link href="/" className="text-sm text-ink-soft underline underline-offset-4">

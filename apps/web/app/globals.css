@@ -25,6 +25,12 @@
     'Hiragino Mincho ProN', 'Yu Mincho', YuMincho, 'Noto Serif JP', 'Times New Roman', serif;
 }
 
+/*
+ * 横持ちのスマホ。高さが足りないので、本文と操作を左右に分けて縦の詰まりを解く。
+ * 「横向き」だけを条件にすると横長のデスクトップまで巻き込むため、高さも見る。
+ */
+@custom-variant land (@media (max-height: 34rem) and (orientation: landscape));
+
 :root {
   color-scheme: light;
 }

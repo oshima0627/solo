@@ -12,25 +12,28 @@ export function EndScreen({ game, onRestart }: { game: GameState; onRestart: () 
   useEffect(() => playCue('end'), [])
 
   return (
-    <Screen>
-      <header className="flex items-baseline justify-between border-b border-rule pb-3">
-        <span className="label tnum">全 {game.roundNo} 局</span>
-        <SoundToggle className="-mr-1.5" />
-      </header>
-
-      <div className="animate-rise">
-        <h1 className="font-serif text-6xl leading-none">結果</h1>
-        <div className="mt-5 h-px w-16 bg-vermilion" />
+    <Screen
+      header={
+        <header className="flex items-baseline justify-between border-b border-rule pb-3">
+          <span className="label tnum">全 {game.roundNo} 局</span>
+          <SoundToggle className="-mr-1.5" />
+        </header>
+      }
+      footer={<Button onClick={onRestart}>もう一度遊ぶ</Button>}
+    >
+      <div className="animate-rise shrink-0">
+        <h1 className="font-serif text-6xl leading-none land:text-4xl">結果</h1>
+        <div className="mt-5 h-px w-16 bg-vermilion land:mt-3" />
       </div>
 
-      <div className="flex-1 overflow-y-auto">
+      <div className="mt-5 min-h-0 flex-1 overflow-y-auto land:mt-3">
         {rows.map((row) => {
           const diff = row.chips - game.config.initialChips
           const top = row.rank === 1
           return (
             <div
               key={row.playerId}
-              className="flex items-baseline gap-4 border-b border-rule py-4 first:border-t"
+              className="flex items-baseline gap-4 border-b border-rule py-4 first:border-t land:py-2.5"
             >
               <span
                 className={`tnum w-8 shrink-0 font-serif text-2xl leading-none ${
@@ -56,8 +59,6 @@ export function EndScreen({ game, onRestart }: { game: GameState; onRestart: () 
           )
         })}
       </div>
-
-      <Button onClick={onRestart}>もう一度遊ぶ</Button>
     </Screen>
   )
 }

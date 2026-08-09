@@ -5,10 +5,11 @@ import { isRedSuit, suitSymbol, type Card, type Rank } from '@solo/engine'
 type Size = 'sm' | 'md' | 'lg'
 
 /** 実際のトランプと同じ 2.5 : 3.5 の比率 */
+/** 横持ちでは高さが足りないので一回り小さくする */
 const WIDTH: Record<Size, string> = {
-  sm: 'w-[3.25rem]',
-  md: 'w-[4.75rem]',
-  lg: 'w-[6.75rem]',
+  sm: 'w-[3.25rem] land:w-[2.75rem]',
+  md: 'w-[4.75rem] land:w-[3.75rem]',
+  lg: 'w-[6.75rem] land:w-[4.75rem]',
 }
 
 const RADIUS: Record<Size, string> = {

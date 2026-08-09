@@ -12,21 +12,24 @@ export function HandoffScreen({ game, onReveal }: { game: GameState; onReveal: (
   if (!playerId) return null
 
   return (
-    <Screen>
-      <header className="grid grid-cols-3 gap-4 border-b border-rule pb-3">
-        <Stat label="局" value={`第 ${game.roundNo} 局`} />
-        <Stat label="場" value={game.round?.pot ?? 0} />
-        <Stat label="山札" value={deckColorLabel(game.deckColor)} />
-      </header>
-
+    <Screen
+      header={
+        <header className="grid grid-cols-3 gap-4 border-b border-rule pb-3">
+          <Stat label="局" value={`第 ${game.roundNo} 局`} />
+          <Stat label="場" value={game.round?.pot ?? 0} />
+          <Stat label="山札" value={deckColorLabel(game.deckColor)} />
+        </header>
+      }
+      footer={<Button onClick={onReveal}>手札を確認する</Button>}
+    >
       <div className="flex flex-1 flex-col justify-center">
         <div className="animate-rise">
           <p className="label">次の人</p>
-          <p className="mt-4 font-serif text-6xl leading-tight tracking-[-0.01em]">
+          <p className="mt-4 font-serif text-6xl leading-tight tracking-[-0.01em] land:mt-2 land:text-5xl">
             {playerName(game, playerId)}
           </p>
-          <div className="mt-6 h-px w-16 bg-vermilion" />
-          <p className="mt-6 text-sm leading-relaxed text-ink-soft">
+          <div className="mt-6 h-px w-16 bg-vermilion land:mt-4" />
+          <p className="mt-6 text-sm leading-relaxed text-ink-soft land:mt-4 land:text-xs">
             端末を渡してください。
             <br />
             他の人に見られないように受け取ってください。
@@ -34,14 +37,12 @@ export function HandoffScreen({ game, onReveal }: { game: GameState; onReveal: (
         </div>
 
         {game.carryOver > 0 ? (
-          <p className="tnum mt-10 border-t border-rule pt-3 text-sm text-ink-soft">
+          <p className="tnum mt-10 border-t border-rule pt-3 text-sm text-ink-soft land:mt-5">
             前の局からの持ち越し{' '}
             <span className="font-bold text-vermilion">{game.carryOver}</span>
           </p>
         ) : null}
       </div>
-
-      <Button onClick={onReveal}>手札を確認する</Button>
     </Screen>
   )
 }

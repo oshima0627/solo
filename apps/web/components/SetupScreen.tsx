@@ -83,15 +83,22 @@ export function SetupScreen({
     'w-full border-b border-rule bg-transparent py-2.5 text-base outline-none transition-colors focus:border-vermilion'
 
   return (
-    <Screen>
-      <header className="flex items-baseline justify-between border-b border-rule pb-3">
-        <h1 className="text-sm font-bold tracking-[0.1em]">ゲーム設定</h1>
-        <button type="button" onClick={onBack} className="text-sm text-ink-soft underline underline-offset-4">
-          戻る
-        </button>
-      </header>
-
-      <div className="flex-1 space-y-9 overflow-y-auto">
+    <Screen
+      header={
+        <header className="flex items-baseline justify-between border-b border-rule pb-3">
+          <h1 className="text-sm font-bold tracking-[0.1em]">ゲーム設定</h1>
+          <button
+            type="button"
+            onClick={onBack}
+            className="text-sm text-ink-soft underline underline-offset-4"
+          >
+            戻る
+          </button>
+        </header>
+      }
+      footer={<Button onClick={submit}>はじめる</Button>}
+    >
+      <div className="min-h-0 flex-1 space-y-9 overflow-y-auto land:space-y-6">
         <section className="space-y-4">
           <SectionHead index="01">遊び方</SectionHead>
           <Segmented
@@ -242,8 +249,6 @@ export function SetupScreen({
           ) : null}
         </section>
       </div>
-
-      <Button onClick={submit}>はじめる</Button>
     </Screen>
   )
 }
