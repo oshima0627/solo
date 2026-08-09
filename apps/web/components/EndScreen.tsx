@@ -22,7 +22,7 @@ export function EndScreen({ game, onRestart }: { game: GameState; onRestart: () 
       footer={<Button onClick={onRestart}>もう一度遊ぶ</Button>}
     >
       <div className="animate-rise shrink-0">
-        <h1 className="font-serif text-6xl leading-none land:text-4xl">結果</h1>
+        <h1 className="font-serif text-6xl leading-none wide:text-7xl land:text-4xl">結果</h1>
         <div className="mt-5 h-px w-16 bg-vermilion land:mt-3" />
       </div>
 

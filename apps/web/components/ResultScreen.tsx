@@ -118,7 +118,7 @@ export function ResultScreen({
       <div className="shrink-0">
         <p className="text-sm text-ink-soft">{info.eyebrow}</p>
         <p
-          className={`mt-2 font-serif text-6xl leading-none land:text-4xl ${
+          className={`mt-2 font-serif text-6xl leading-none wide:text-7xl land:text-4xl ${
             isBomb ? 'animate-strike text-vermilion' : 'animate-rise'
           }`}
         >

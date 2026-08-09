@@ -76,7 +76,7 @@ export function TurnScreen({
       >
         <div className="flex flex-1 flex-col justify-center">
           <p className="text-sm text-ink-soft">{playerName(game, playerId)}</p>
-          <p className="mt-3 font-serif text-6xl leading-tight land:mt-2 land:text-5xl">
+          <p className="mt-3 font-serif text-6xl leading-tight wide:text-7xl land:mt-2 land:text-5xl">
             {ACTION_LABEL[pending.type]}
             {pending.type === 'RAISE' ? (
               <span className="tnum text-vermilion"> +{pending.amount}</span>
@@ -138,7 +138,7 @@ export function TurnScreen({
             className={
               actions.length === 3
                 ? 'space-y-2.5'
-                : 'grid grid-cols-2 gap-2.5 land:grid-cols-1 land:space-y-0'
+                : 'grid grid-cols-2 gap-2.5 wide:grid-cols-1 land:grid-cols-1'
             }
           >
             {actions
@@ -185,7 +185,7 @@ export function TurnScreen({
         {shown && hand ? (
           <div className="animate-rise text-center">
             <span className="label block">役</span>
-            <p className="mt-2 font-serif text-4xl leading-none land:mt-1 land:text-3xl">
+            <p className="mt-2 font-serif text-4xl leading-none wide:text-5xl land:mt-1 land:text-3xl">
               {hand.name}
             </p>
           </div>

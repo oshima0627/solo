@@ -25,7 +25,7 @@ export function HandoffScreen({ game, onReveal }: { game: GameState; onReveal: (
       <div className="flex flex-1 flex-col justify-center">
         <div className="animate-rise">
           <p className="label">次の人</p>
-          <p className="mt-4 font-serif text-6xl leading-tight tracking-[-0.01em] land:mt-2 land:text-5xl">
+          <p className="mt-4 font-serif text-6xl leading-tight tracking-[-0.01em] wide:text-7xl land:mt-2 land:text-5xl">
             {playerName(game, playerId)}
           </p>
           <div className="mt-6 h-px w-16 bg-vermilion land:mt-4" />

@@ -26,9 +26,13 @@
 }
 
 /*
- * 横持ちのスマホ。高さが足りないので、本文と操作を左右に分けて縦の詰まりを解く。
- * 「横向き」だけを条件にすると横長のデスクトップまで巻き込むため、高さも見る。
+ * 画面の広さで組みを変える。どちらにも高さの条件を入れて land と wide が
+ * 同時に当たらないようにしてあるので、打ち消し合いを気にしなくてよい。
+ *
+ * wide … PC・タブレット。余白と文字を大きく取り、本文と操作を左右に分ける
+ * land … 横持ちのスマホ。同じく左右に分けるが、高さが無いので全体を詰める
  */
+@custom-variant wide (@media (min-width: 48rem) and (min-height: 34rem));
 @custom-variant land (@media (max-height: 34rem) and (orientation: landscape));
 
 :root {

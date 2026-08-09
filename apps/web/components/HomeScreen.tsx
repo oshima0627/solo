@@ -43,23 +43,23 @@ export function HomeScreen({
         </>
       }
     >
-      <div className="flex flex-1 flex-col justify-center gap-8 land:flex-row land:items-center land:gap-7">
-        <div className="animate-rise land:flex-1">
-          <h1 className="font-serif text-[5.5rem] leading-[0.85] tracking-[-0.02em] land:text-6xl">
+      <div className="flex flex-1 flex-col justify-center gap-8 wide:flex-row wide:items-center wide:gap-14 land:flex-row land:items-center land:gap-7">
+        <div className="animate-rise wide:min-w-[24rem] wide:flex-1 land:flex-1">
+          <h1 className="font-serif text-[5.5rem] leading-[0.85] tracking-[-0.02em] wide:text-8xl land:text-6xl">
             ソロ
           </h1>
-          <p className="mt-6 text-sm leading-[1.95] text-ink-soft land:mt-4 land:text-xs land:leading-[1.8]">
+          <p className="mt-6 text-sm leading-[1.95] text-ink-soft wide:mt-8 wide:text-base wide:leading-[2.1] land:mt-4 land:text-xs land:leading-[1.8]">
             スマホ1台を回して遊ぶ、沖縄のローカルゲーム。
             A〜10の20枚だけを使い、配られた2枚の役の強さを競います。
           </p>
-          <p className="mt-8 border-y border-rule py-3 text-center text-sm tracking-[0.16em] text-ink-soft land:mt-4 land:py-2 land:text-xs">
+          <p className="mt-8 border-y border-rule py-3 text-center text-sm tracking-[0.16em] text-ink-soft wide:mt-10 wide:py-4 wide:text-base land:mt-4 land:py-2 land:text-xs">
             ソロ　＞　逆ソロ　＞　ピン　＞　数字
           </p>
         </div>
 
         {/* バクダン。このゲームで一番強い手を静かに置いておく */}
         <div
-          className="animate-rise flex justify-center land:shrink-0"
+          className="animate-rise flex justify-center wide:shrink-0 land:shrink-0"
           style={{ animationDelay: '90ms' }}
           aria-hidden="true"
         >

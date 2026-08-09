@@ -36,7 +36,7 @@ function Section({
 
 export default function RulesPage() {
   return (
-    <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col gap-10 px-5 pb-12 pt-6">
+    <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col gap-10 px-5 pb-12 pt-6 wide:max-w-2xl wide:gap-14 wide:px-8 wide:pb-20 wide:pt-12">
       <header className="flex items-baseline justify-between border-b border-rule pb-3">
         <span className="label">ルール</span>
         <Link href="/" className="text-sm text-ink-soft underline underline-offset-4">
@@ -45,7 +45,7 @@ export default function RulesPage() {
       </header>
 
       <div>
-        <h1 className="font-serif text-5xl leading-none">ソロの遊び方</h1>
+        <h1 className="font-serif text-5xl leading-none wide:text-6xl">ソロの遊び方</h1>
         <div className="mt-5 h-px w-16 bg-vermilion" />
       </div>
 

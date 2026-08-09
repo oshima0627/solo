@@ -24,7 +24,7 @@ export function CpuTurnScreen({ game }: { game: GameState }) {
       <div className="flex flex-1 flex-col items-center justify-center gap-8 land:flex-row land:gap-7">
         <HandRow cards={null} hidden size="lg" />
         <div className="text-center land:text-left">
-          <p className="font-serif text-4xl leading-none land:text-3xl">
+          <p className="font-serif text-4xl leading-none wide:text-5xl land:text-3xl">
             {playerName(game, playerId)}
           </p>
           <p className="mt-4 text-sm text-ink-soft land:mt-3">
