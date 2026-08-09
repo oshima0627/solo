@@ -30,7 +30,7 @@ export function TurnScreen({
 }: {
   game: GameState
   onSubmit: (action: PlayerAction) => void
-  /** ひとり練習では隠す相手がいないので、手札を出しっぱなしにする */
+  /** 人が自分1人だけのときは隠す相手がいないので、手札を出しっぱなしにする */
   alwaysVisible?: boolean
 }) {
   const playerId = currentPlayerId(game)

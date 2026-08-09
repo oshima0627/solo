@@ -54,7 +54,7 @@ export default function Page() {
   const game = solo.game
 
   const actor = currentPlayerId(game)
-  // 人間が 1 人だけなら受け渡しの必要がないので、シールドも長押しも省く
+  // 人が 1 人だけなら受け渡しの必要がないので、シールドも長押しも省く
   const soloPractice = game.config.players.filter((p) => !p.isCpu).length === 1
 
   switch (game.phase) {

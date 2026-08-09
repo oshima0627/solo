@@ -22,11 +22,12 @@ export function SetupScreen({
   onStart: (config: GameConfig) => void
   onBack: () => void
 }) {
-  const [mode, setMode] = useState<'PASS' | 'SOLO'>('PASS')
   const [playerCount, setPlayerCount] = useState(3)
   const [names, setNames] = useState<string[]>(() =>
     Array.from({ length: MAX_PLAYERS }, (_, i) => `プレイヤー${i + 1}`),
   )
+  /** 席ごとに人か CPU かを持つ。人と CPU は自由に混ぜられる */
+  const [isCpu, setIsCpu] = useState<boolean[]>(() => Array(MAX_PLAYERS).fill(false))
   const [bettingMode, setBettingMode] = useState<BettingMode>('ANTE')
   const [endType, setEndType] = useState<EndType>('ROUNDS')
   const [rounds, setRounds] = useState(10)
@@ -46,6 +47,18 @@ export function SetupScreen({
     setNames((current) => current.map((name, i) => (i === index ? value : name)))
   }
 
+  const toggleCpu = (index: number) => {
+    setIsCpu((current) => current.map((cpu, i) => (i === index ? !cpu : cpu)))
+  }
+
+  const seats = isCpu.slice(0, playerCount)
+  const cpuCount = seats.filter(Boolean).length
+  const humanCount = playerCount - cpuCount
+
+  /** CPU は席順に CPU 1, CPU 2 … と番号を振る */
+  const cpuLabel = (index: number) =>
+    `CPU ${isCpu.slice(0, index + 1).filter(Boolean).length}`
+
   const submit = () => {
     const endCondition: EndCondition =
       endType === 'ROUNDS'
@@ -55,13 +68,12 @@ export function SetupScreen({
           : { type: 'FREE' }
 
     onStart({
-      // ひとり練習では 1 人目だけが人間で、残りは CPU になる
       players: Array.from({ length: playerCount }, (_, i) => {
-        const isCpu = mode === 'SOLO' && i > 0
+        const cpu = isCpu[i] ?? false
         return {
           id: `p${i + 1}`,
-          name: isCpu ? `CPU ${i}` : names[i]?.trim() || `プレイヤー${i + 1}`,
-          isCpu,
+          name: cpu ? cpuLabel(i) : names[i]?.trim() || `プレイヤー${i + 1}`,
+          isCpu: cpu,
         }
       }),
       bettingMode,
@@ -100,22 +112,9 @@ export function SetupScreen({
     >
       <div className="min-h-0 flex-1 space-y-9 overflow-y-auto land:space-y-6">
         <section className="space-y-4">
-          <SectionHead index="01">遊び方</SectionHead>
-          <Segmented
-            value={mode}
-            onChange={setMode}
-            options={[
-              { value: 'PASS', label: 'みんなで' },
-              { value: 'SOLO', label: 'ひとり練習' },
-            ]}
-          />
-          <p className="text-xs leading-relaxed text-ink-soft">
-            {mode === 'PASS'
-              ? '1台の端末を回して、その場にいる人と遊びます。'
-              : 'CPUを相手に1人で遊びます。ルールを覚えるのにも使えます。'}
-          </p>
+          <SectionHead index="01">参加者</SectionHead>
 
-          <Field label={mode === 'SOLO' ? '人数（自分とCPU）' : '人数'}>
+          <Field label="人数">
             <Stepper
               value={playerCount}
               min={MIN_PLAYERS}
@@ -125,24 +124,54 @@ export function SetupScreen({
           </Field>
 
           <div className="space-y-1">
-            {Array.from({ length: mode === 'SOLO' ? 1 : playerCount }, (_, i) => (
-              <div key={i} className="flex items-baseline gap-3">
-                <span className="label tnum w-5 shrink-0">{String(i + 1).padStart(2, '0')}</span>
-                <input
-                  value={names[i] ?? ''}
-                  onChange={(e) => setName(i, e.target.value)}
-                  maxLength={12}
-                  aria-label={`${i + 1}人目の名前`}
-                  className={input}
-                />
-              </div>
-            ))}
-            {mode === 'SOLO' ? (
-              <p className="pt-2 text-xs text-ink-soft">
-                相手は CPU 1 から CPU {playerCount - 1} になります
-              </p>
-            ) : null}
+            {Array.from({ length: playerCount }, (_, i) => {
+              const cpu = isCpu[i] ?? false
+              // 全員が CPU になると誰も操作できなくなるので、最後の1人は人のまま残す
+              const locked = !cpu && humanCount <= 1
+              return (
+                <div key={i} className="flex items-center gap-3">
+                  <span className="label tnum w-5 shrink-0">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  {cpu ? (
+                    <span className="flex-1 border-b border-rule py-2.5 text-base text-ink-faint">
+                      {cpuLabel(i)}
+                    </span>
+                  ) : (
+                    <input
+                      value={names[i] ?? ''}
+                      onChange={(e) => setName(i, e.target.value)}
+                      maxLength={12}
+                      aria-label={`${i + 1}人目の名前`}
+                      className={input}
+                    />
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => toggleCpu(i)}
+                    disabled={locked}
+                    aria-pressed={cpu}
+                    aria-label={`${i + 1}人目をCPUにする`}
+                    className={`shrink-0 rounded-sm border px-3 py-1.5 text-xs font-bold tracking-[0.1em] transition-colors disabled:opacity-35 ${
+                      cpu
+                        ? 'border-vermilion bg-vermilion text-paper-raised'
+                        : 'border-rule-strong text-ink-faint active:bg-paper-sunk'
+                    }`}
+                  >
+                    CPU
+                  </button>
+                </div>
+              )
+            })}
           </div>
+
+          <p className="text-xs leading-relaxed text-ink-soft">
+            {cpuCount === 0
+              ? '1台の端末を回して、その場にいる人と遊びます。CPUを混ぜることもできます。'
+              : humanCount === 1
+                ? 'あなた以外はCPUなので、端末の受け渡しはありません。'
+                : `${humanCount}人とCPU${cpuCount}人で遊びます。人の手番だけ端末を回します。`}
+          </p>
         </section>
 
         <section className="space-y-4">
