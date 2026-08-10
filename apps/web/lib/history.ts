@@ -1,4 +1,4 @@
-import { standings, type GameState } from '@solo/engine'
+import { standings, type GameConfig, type GameState } from '@solo/engine'
 
 const HISTORY_KEY = 'solo:history:v1'
 const MAX_ENTRIES = 50
