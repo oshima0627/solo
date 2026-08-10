@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 import { standings, type GameState } from '@solo/engine'
+import { vibrate } from '@/lib/native'
 import { playCue } from '@/lib/sound'
 import { SoundToggle } from './SoundToggle'
 import { Button, Screen } from './ui'
@@ -9,7 +10,10 @@ import { Button, Screen } from './ui'
 export function EndScreen({ game, onRestart }: { game: GameState; onRestart: () => void }) {
   const rows = standings(game)
 
-  useEffect(() => playCue('end'), [])
+  useEffect(() => {
+    playCue('end')
+    void vibrate('light')
+  }, [])
 
   return (
     <Screen

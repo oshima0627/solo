@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { vibrate } from '@/lib/native'
 import { isMuted, playCue, setMuted } from '@/lib/sound'
 
 function SpeakerIcon({ muted }: { muted: boolean }) {
@@ -44,7 +45,10 @@ export function SoundToggle({ className = '' }: { className?: string }) {
         const next = !muted
         setMuted(next)
         setMutedState(next)
-        if (!next) playCue('win')
+        if (!next) {
+          playCue('win')
+          void vibrate('light')
+        }
       }}
       className={`inline-flex h-8 w-8 items-center justify-center rounded-sm transition-colors active:bg-paper-sunk ${
         muted ? 'text-ink-faint' : 'text-ink-soft'
