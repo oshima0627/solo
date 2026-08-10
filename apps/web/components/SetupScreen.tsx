@@ -213,7 +213,7 @@ export function SetupScreen({
               label="初期チップ"
               value={initialChips}
               min={5}
-              max={500}
+              max={10000000}
               step={5}
               onChange={(next) => {
                 setInitialChips(next)
@@ -227,7 +227,7 @@ export function SetupScreen({
               label="場代"
               value={anteAmount}
               min={1}
-              max={Math.min(10, initialChips)}
+              max={Math.min(100000, initialChips)}
               onChange={setAnteAmount}
             />
           </Field>
