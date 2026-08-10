@@ -29,7 +29,7 @@ export async function initStatusBar(): Promise<void> {
   if (!isNative()) return
   try {
     await StatusBar.setBackgroundColor({ color: '#f2eee5' })
-    await StatusBar.setStyle({ style: Style.Dark })
+    await StatusBar.setStyle({ style: Style.Light })
   } catch {
     // 対応していない端末でも続行できるよう握りつぶす
   }
@@ -72,6 +72,6 @@ export function onBackButton(handler: () => boolean): () => void {
   })
 
   return () => {
-    void listenerPromise.then((listener) => listener.remove())
+    void listenerPromise.then((listener) => listener.remove()).catch(() => {})
   }
 }
