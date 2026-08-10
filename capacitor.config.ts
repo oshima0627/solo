@@ -1,4 +1,4 @@
-import type { CapacitorConfig } from '@capacitor/core'
+import type { CapacitorConfig } from '@capacitor/cli'
 
 const config: CapacitorConfig = {
   appId: 'io.github.oshima0627.solo',

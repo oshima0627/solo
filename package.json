@@ -14,7 +14,7 @@
     "preview": "npm run build && wrangler dev",
     "test": "npm run test --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
-    "cap:sync": "npm run build && npx cap sync android",
+    "cap:sync": "npm run build && node scripts/strip-unused-fonts.mjs && npx cap sync android",
     "android": "npm run cap:sync && npx cap open android",
     "assets:android": "node scripts/generate-android-assets.mjs"
   },
