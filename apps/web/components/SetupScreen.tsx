@@ -28,7 +28,7 @@ export function SetupScreen({
   )
   /** 席ごとに人か CPU かを持つ。人と CPU は自由に混ぜられる */
   const [isCpu, setIsCpu] = useState<boolean[]>(() => Array(MAX_PLAYERS).fill(false))
-  const [bettingMode, setBettingMode] = useState<BettingMode>('ANTE')
+  const [bettingMode, setBettingMode] = useState<BettingMode>('RAISE')
   const [endType, setEndType] = useState<EndType>('ROUNDS')
   const [rounds, setRounds] = useState(10)
   const [initialChips, setInitialChips] = useState(5000)
