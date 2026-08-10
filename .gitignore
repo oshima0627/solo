@@ -7,3 +7,10 @@ coverage/
 .DS_Store
 .env*.local
 .superpowers/
+
+android/app/build/
+android/build/
+android/.gradle/
+android/local.properties
+android/captures/
+*.hprof
