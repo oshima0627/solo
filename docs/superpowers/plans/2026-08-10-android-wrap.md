@@ -6,13 +6,13 @@
 
 **Architecture:** `apps/web/out`（静的書き出し）を `webDir` として指す Capacitor プロジェクトを追加し、Android プロジェクト一式（`android/`）を solo リポジトリ内に生成する。Web 側のコード変更は `apps/web/lib/native.ts` という単一の橋渡し層に閉じ込め、ブラウザ実行時は全関数が no-op になるようにする。これにより既存の Web 版の挙動・ビルド・デプロイは無変更のまま保たれる。
 
-**Tech Stack:** Capacitor 7系（`@capacitor/core` / `@capacitor/cli` / `@capacitor/android` / `@capacitor/app` / `@capacitor/haptics` / `@capacitor/splash-screen` / `@capacitor/status-bar` / `@capacitor-community/keep-awake`）、`@fontsource/noto-serif-jp`、素材生成に `sharp` + `glob`（Node スクリプト）。
+**Tech Stack:** Capacitor 8系（`@capacitor/core` / `@capacitor/cli` / `@capacitor/android` / `@capacitor/app` / `@capacitor/haptics` / `@capacitor/splash-screen` / `@capacitor/status-bar` / `@capacitor-community/keep-awake`）、`@fontsource/noto-serif-jp`、素材生成に `sharp` + `glob`（Node スクリプト）。
 
 ## Global Constraints
 
 - Web 版（`apps/web` のビルド・デプロイ・見た目）を壊さない。Capacitor 関連の分岐は必ず `apps/web/lib/native.ts` に閉じ込め、ブラウザでは no-op にする。
 - `apps/web` には既存の単体テスト基盤が無い（`packages/solo-engine` にのみ vitest がある）。この計画で apps/web に新しいテストランナーを導入しない。apps/web の各タスクの検証は `npm run typecheck -w @solo/web` と `npm run build -w @solo/web` の成功、および指定した手動確認で行う。
-- `packages/solo-engine` のロジックには一切手を入れない（既存103件のテストは無変更で通り続ける）。
+- `packages/solo-engine` のロジックには一切手を入れない（既存139件のテストは無変更で通り続ける）。
 - 署名鍵（`*.keystore` / `keystore.properties`）は絶対にコミットしない。
 - applicationId は `io.github.oshima0627.solo` で固定する（後から変更不可のため）。
 - フォントの `@font-face` を追加する際、`apps/web/app/globals.css` の `--font-serif` の候補順序は変更しない（Mac/Windows の見た目を変えないため）。
@@ -1354,7 +1354,7 @@ CPU 対戦を含む設定でゲームを開始し、CPU の手番中（`CPU_THIN
 npm test -w @solo/engine
 ```
 
-Expected: 既存の103件のテストが全て通る（この計画でエンジンのコードは変更していないため、当然通るはずだが最終確認として実行する）。
+Expected: 既存の139件のテストが全て通る（この計画でエンジンのコードは変更していないため、当然通るはずだが最終確認として実行する）。
 
 - [ ] **Step 12: 気になった不具合を記録する**
 
