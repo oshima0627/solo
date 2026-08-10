@@ -15,8 +15,11 @@ export interface HistoryEntry {
   readonly roundNo: number
   readonly initialChips: number
   readonly standings: readonly HistoryStanding[]
-  /** 「この設定で始める」で使う、対局開始時点の設定一式 */
-  readonly config: GameConfig
+  /**
+   * 「この設定で始める」で使う、対局開始時点の設定一式。
+   * この項目を追加する前に保存された履歴には含まれないため任意にしている。
+   */
+  readonly config?: GameConfig
 }
 
 function summarize(game: GameState): HistoryEntry {

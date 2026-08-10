@@ -21,6 +21,8 @@ export default function Page() {
   const [resumed, setResumed] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [historyOpen, setHistoryOpen] = useState(false)
+  /** 履歴の「この設定で始める」から開いたときだけ入る、引き継ぎ元の設定 */
+  const [presetConfig, setPresetConfig] = useState<GameConfig | null>(null)
 
   useEffect(() => {
     void initStatusBar()
@@ -106,7 +108,14 @@ export default function Page() {
   if (historyOpen) {
     return (
       <>
-        <HistoryScreen onBack={() => setHistoryOpen(false)} />
+        <HistoryScreen
+          onBack={() => setHistoryOpen(false)}
+          onUseConfig={(config) => {
+            setPresetConfig(config)
+            setHistoryOpen(false)
+            setSetupOpen(true)
+          }}
+        />
         {confirmDialog}
       </>
     )
@@ -115,7 +124,11 @@ export default function Page() {
   if (setupOpen) {
     return (
       <>
-        <SetupScreen onStart={start} onBack={() => setSetupOpen(false)} />
+        <SetupScreen
+          onStart={start}
+          onBack={() => setSetupOpen(false)}
+          initialConfig={presetConfig ?? undefined}
+        />
         {confirmDialog}
       </>
     )
@@ -130,6 +143,7 @@ export default function Page() {
           onResume={() => setResumed(true)}
           onNew={() => {
             solo.clearGame()
+            setPresetConfig(null)
             setSetupOpen(true)
           }}
           onHistory={() => setHistoryOpen(true)}
@@ -169,6 +183,7 @@ export default function Page() {
             onRestart={() => {
               solo.clearGame()
               setResumed(false)
+              setPresetConfig(null)
               setSetupOpen(true)
             }}
             onHome={() => {

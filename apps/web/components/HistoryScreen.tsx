@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import type { GameConfig } from '@solo/engine'
 import { loadHistory, type HistoryEntry } from '@/lib/history'
 import { Button, Screen } from './ui'
 
@@ -10,7 +11,13 @@ function formatDate(timestamp: number): string {
   return `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()} ${pad(d.getHours())}:${pad(d.getMinutes())}`
 }
 
-export function HistoryScreen({ onBack }: { onBack: () => void }) {
+export function HistoryScreen({
+  onBack,
+  onUseConfig,
+}: {
+  onBack: () => void
+  onUseConfig: (config: GameConfig) => void
+}) {
   // localStorage はマウント後に読む（サーバー描画との食い違いを避けるため）
   const [entries, setEntries] = useState<HistoryEntry[] | null>(null)
 
@@ -72,6 +79,17 @@ export function HistoryScreen({ onBack }: { onBack: () => void }) {
                   )
                 })}
               </div>
+              {entry.config ? (
+                <div className="mt-3 flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => onUseConfig(entry.config!)}
+                    className="text-xs text-ink-soft underline underline-offset-4"
+                  >
+                    この設定で始める
+                  </button>
+                </div>
+              ) : null}
             </div>
           ))
         )}

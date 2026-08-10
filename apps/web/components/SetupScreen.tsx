@@ -18,30 +18,52 @@ type EndType = EndCondition['type']
 export function SetupScreen({
   onStart,
   onBack,
+  initialConfig,
 }: {
   onStart: (config: GameConfig) => void
   onBack: () => void
+  /** 履歴の「この設定で始める」から開いたときに渡す、引き継ぎ元の設定 */
+  initialConfig?: GameConfig
 }) {
-  const [playerCount, setPlayerCount] = useState(3)
+  const [playerCount, setPlayerCount] = useState(() =>
+    initialConfig
+      ? Math.min(Math.max(initialConfig.players.length, MIN_PLAYERS), MAX_PLAYERS)
+      : 3,
+  )
   const [names, setNames] = useState<string[]>(() =>
-    Array.from({ length: MAX_PLAYERS }, (_, i) => `プレイヤー${i + 1}`),
+    Array.from({ length: MAX_PLAYERS }, (_, i) => {
+      const player = initialConfig?.players[i]
+      return player && !player.isCpu ? player.name : `プレイヤー${i + 1}`
+    }),
   )
   /** 席ごとに人か CPU かを持つ。人と CPU は自由に混ぜられる */
-  const [isCpu, setIsCpu] = useState<boolean[]>(() => Array(MAX_PLAYERS).fill(false))
-  const [bettingMode, setBettingMode] = useState<BettingMode>('RAISE')
-  const [endType, setEndType] = useState<EndType>('ROUNDS')
-  const [rounds, setRounds] = useState(10)
-  const [initialChips, setInitialChips] = useState(5000)
-  const [anteAmount, setAnteAmount] = useState(100)
-  const [showRules, setShowRules] = useState(false)
-  const [swapDeckOnBomb, setSwapDeckOnBomb] = useState(DEFAULT_RULES.swapDeckOnBomb)
-  const [highPinzoro, setHighPinzoro] = useState(
-    DEFAULT_RULES.pinzoroPosition === 'secondHighest',
+  const [isCpu, setIsCpu] = useState<boolean[]>(() =>
+    Array.from({ length: MAX_PLAYERS }, (_, i) => initialConfig?.players[i]?.isCpu ?? false),
   )
-  const [allPins, setAllPins] = useState(false)
-  const [gyakuSolo, setGyakuSolo] = useState(DEFAULT_RULES.gyakuSolo)
-  const [shiroku, setShiroku] = useState(DEFAULT_RULES.shiroku)
-  const [bombExtraCharge, setBombExtraCharge] = useState(500)
+  const [bettingMode, setBettingMode] = useState<BettingMode>(
+    initialConfig?.bettingMode ?? 'RAISE',
+  )
+  const [endType, setEndType] = useState<EndType>(initialConfig?.endCondition.type ?? 'ROUNDS')
+  const [rounds, setRounds] = useState(
+    initialConfig?.endCondition.type === 'ROUNDS' ? initialConfig.endCondition.count : 10,
+  )
+  const [initialChips, setInitialChips] = useState(initialConfig?.initialChips ?? 5000)
+  const [anteAmount, setAnteAmount] = useState(initialConfig?.anteAmount ?? 100)
+  const [showRules, setShowRules] = useState(false)
+  const [swapDeckOnBomb, setSwapDeckOnBomb] = useState(
+    initialConfig?.rules.swapDeckOnBomb ?? DEFAULT_RULES.swapDeckOnBomb,
+  )
+  const [highPinzoro, setHighPinzoro] = useState(
+    (initialConfig?.rules.pinzoroPosition ?? DEFAULT_RULES.pinzoroPosition) === 'secondHighest',
+  )
+  const [allPins, setAllPins] = useState(
+    (initialConfig?.rules.pinRanks.length ?? STANDARD_PIN_RANKS.length) === ALL_PIN_RANKS.length,
+  )
+  const [gyakuSolo, setGyakuSolo] = useState(initialConfig?.rules.gyakuSolo ?? DEFAULT_RULES.gyakuSolo)
+  const [shiroku, setShiroku] = useState(initialConfig?.rules.shiroku ?? DEFAULT_RULES.shiroku)
+  const [bombExtraCharge, setBombExtraCharge] = useState(
+    initialConfig?.rules.bombExtraCharge ?? 500,
+  )
 
   const setName = (index: number, value: string) => {
     setNames((current) => current.map((name, i) => (i === index ? value : name)))
