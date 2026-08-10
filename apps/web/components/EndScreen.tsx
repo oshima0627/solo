@@ -7,7 +7,15 @@ import { playCue } from '@/lib/sound'
 import { SoundToggle } from './SoundToggle'
 import { Button, Screen } from './ui'
 
-export function EndScreen({ game, onRestart }: { game: GameState; onRestart: () => void }) {
+export function EndScreen({
+  game,
+  onRestart,
+  onHome,
+}: {
+  game: GameState
+  onRestart: () => void
+  onHome: () => void
+}) {
   const rows = standings(game)
 
   useEffect(() => {
@@ -23,7 +31,14 @@ export function EndScreen({ game, onRestart }: { game: GameState; onRestart: () 
           <SoundToggle className="-mr-1.5" />
         </header>
       }
-      footer={<Button onClick={onRestart}>もう一度遊ぶ</Button>}
+      footer={
+        <>
+          <Button onClick={onRestart}>もう一度遊ぶ</Button>
+          <Button variant="quiet" onClick={onHome}>
+            ホームに戻る
+          </Button>
+        </>
+      }
     >
       <div className="animate-rise shrink-0">
         <h1 className="font-serif text-6xl leading-none wide:text-7xl land:text-4xl">結果</h1>

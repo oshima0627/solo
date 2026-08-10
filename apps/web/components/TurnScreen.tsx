@@ -36,7 +36,7 @@ export function TurnScreen({
   const playerId = currentPlayerId(game)
   const [held, setHeld] = useState(false)
   const [pending, setPending] = useState<PlayerAction | null>(null)
-  const [raiseAmount, setRaiseAmount] = useState(1)
+  const [raiseAmount, setRaiseAmount] = useState(game.config.anteAmount)
 
   if (!playerId) return null
 

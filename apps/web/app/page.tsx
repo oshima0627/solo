@@ -155,6 +155,10 @@ export default function Page() {
               setResumed(false)
               setSetupOpen(true)
             }}
+            onHome={() => {
+              solo.clearGame()
+              setResumed(false)
+            }}
           />
         )
 
