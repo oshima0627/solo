@@ -41,7 +41,7 @@ export function SetupScreen({
   const [allPins, setAllPins] = useState(false)
   const [gyakuSolo, setGyakuSolo] = useState(DEFAULT_RULES.gyakuSolo)
   const [shiroku, setShiroku] = useState(DEFAULT_RULES.shiroku)
-  const [bombExtraCharge, setBombExtraCharge] = useState(DEFAULT_RULES.bombExtraCharge)
+  const [bombExtraCharge, setBombExtraCharge] = useState(500)
 
   const setName = (index: number, value: string) => {
     setNames((current) => current.map((name, i) => (i === index ? value : name)))
@@ -288,7 +288,7 @@ export function SetupScreen({
                     label="バクダンの追加徴収"
                     value={bombExtraCharge}
                     min={0}
-                    max={20}
+                    max={Math.min(100000, initialChips)}
                     onChange={setBombExtraCharge}
                   />
                 </Field>
