@@ -31,8 +31,8 @@ export function SetupScreen({
   const [bettingMode, setBettingMode] = useState<BettingMode>('ANTE')
   const [endType, setEndType] = useState<EndType>('ROUNDS')
   const [rounds, setRounds] = useState(10)
-  const [initialChips, setInitialChips] = useState(50)
-  const [anteAmount, setAnteAmount] = useState(1)
+  const [initialChips, setInitialChips] = useState(5000)
+  const [anteAmount, setAnteAmount] = useState(100)
   const [showRules, setShowRules] = useState(false)
   const [swapDeckOnBomb, setSwapDeckOnBomb] = useState(DEFAULT_RULES.swapDeckOnBomb)
   const [highPinzoro, setHighPinzoro] = useState(
