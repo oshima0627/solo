@@ -15,6 +15,8 @@ export interface HistoryEntry {
   readonly roundNo: number
   readonly initialChips: number
   readonly standings: readonly HistoryStanding[]
+  /** 「この設定で始める」で使う、対局開始時点の設定一式 */
+  readonly config: GameConfig
 }
 
 function summarize(game: GameState): HistoryEntry {
@@ -24,6 +26,7 @@ function summarize(game: GameState): HistoryEntry {
     roundNo: game.roundNo,
     initialChips: game.config.initialChips,
     standings: standings(game).map(({ name, chips, rank }) => ({ name, chips, rank })),
+    config: game.config,
   }
 }
 
