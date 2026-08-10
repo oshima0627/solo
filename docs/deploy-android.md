@@ -35,42 +35,28 @@ cp android/keystore.properties.example android/keystore.properties
 
 ## build.gradle への組み込み
 
-`android/app/build.gradle` の先頭付近（`apply plugin: 'com.android.application'` の直後）に追加する:
+`android/app/build.gradle` には `keystorePropertiesFile` の読み込みと `signingConfigs.release`
+の定義、`buildTypes.release` への `signingConfig signingConfigs.release` の指定が**すでに組み込み
+済み**（`keystorePropertiesFile.exists()` で守られているため、`keystore.properties` が存在しない
+限り無害）。読者が手動で編集する必要はなく、上の「keystore.properties の作成」だけで署名の準備が
+完了する。
 
-```groovy
-def keystorePropertiesFile = rootProject.file("keystore.properties")
-def keystoreProperties = new Properties()
-if (keystorePropertiesFile.exists()) {
-    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
-}
-```
-
-`android { ... }` ブロックの中に `signingConfigs` を追加し、既存の `buildTypes.release` に
-`signingConfig signingConfigs.release` を指定する:
-
-```groovy
-signingConfigs {
-    release {
-        if (keystorePropertiesFile.exists()) {
-            storeFile file(keystoreProperties['storeFile'])
-            storePassword keystoreProperties['storePassword']
-            keyAlias keystoreProperties['keyAlias']
-            keyPassword keystoreProperties['keyPassword']
-        }
-    }
-}
-buildTypes {
-    release {
-        signingConfig signingConfigs.release
-        // 既存の minifyEnabled 等はそのまま残す
-    }
-}
-```
+`keystore.properties` を作成しないまま `assembleRelease` / `bundleRelease` を実行すると、
+Gradle が `storeFile` プロパティ未設定のエラー（`SigningConfig "release" is missing required
+property "storeFile"` 等）で失敗する。これは署名をまだ準備していない場合の正しい挙動であり、
+デバッグビルド（`assembleDebug` 等）には影響しない。
 
 ## リリースビルドの作成
 
 Android Studio の **Build > Generate Signed Bundle / APK** から Android App Bundle（.aab）
 を作成する。Play へのアップロードには .aab を使う。
+
+## バージョン番号の更新
+
+Play へ新しいリリースをアップロードするたびに、`android/app/build.gradle` の
+`defaultConfig.versionCode`（現在 `1`）を必ずインクリメントする（Play は同じ versionCode
+の再アップロードを拒否する）。あわせて `versionName`（現在 `"1.0"`）も、ユーザーに見える
+バージョン文字列としてわかりやすい値に更新する。
 
 ## Google Play Console でのアプリ作成
 
