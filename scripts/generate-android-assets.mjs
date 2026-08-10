@@ -36,12 +36,6 @@ async function buildMasters() {
     .png()
     .toBuffer()
 
-  const background = await sharp({
-    create: { width: MASTER_SIZE, height: MASTER_SIZE, channels: 4, background: PAPER },
-  })
-    .png()
-    .toBuffer()
-
   const splashMark = await sharp(Buffer.from(foregroundSvg))
     .resize(Math.round(SPLASH_SIZE * 0.4), Math.round(SPLASH_SIZE * 0.4))
     .png()
@@ -54,7 +48,7 @@ async function buildMasters() {
     .png()
     .toBuffer()
 
-  return { legacy, foreground, background, splash }
+  return { legacy, foreground, splash }
 }
 
 async function overwriteMatching(pattern, master, label) {
@@ -74,7 +68,7 @@ async function overwriteMatching(pattern, master, label) {
   }
 }
 
-const { legacy, foreground, background, splash } = await buildMasters()
+const { legacy, foreground, splash } = await buildMasters()
 
 await overwriteMatching('android/app/src/main/res/mipmap-*/ic_launcher.png', legacy, 'legacy icon')
 await overwriteMatching(
@@ -86,11 +80,6 @@ await overwriteMatching(
   'android/app/src/main/res/mipmap-*/ic_launcher_foreground.png',
   foreground,
   'adaptive foreground',
-)
-await overwriteMatching(
-  'android/app/src/main/res/mipmap-*/ic_launcher_background.png',
-  background,
-  'adaptive background',
 )
 await overwriteMatching('android/app/src/main/res/drawable*/splash.png', splash, 'splash')
 
