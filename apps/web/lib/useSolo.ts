@@ -13,6 +13,7 @@ import {
   type GameState,
   type PlayerAction,
 } from '@solo/engine'
+import { setKeepAwake } from './native'
 import { loadSession, saveSession } from './session'
 
 /** CPU が考えているように見せるための待ち時間 */
@@ -56,6 +57,12 @@ export function useSolo() {
     return () => clearTimeout(timer)
   }, [game])
 
+  // ゲームが進行中のあいだは画面を消灯させない
+  useEffect(() => {
+    if (!hydrated) return
+    void setKeepAwake(game !== null && game.phase !== 'GAME_END')
+  }, [game, hydrated])
+
   const startGame = useCallback((config: GameConfig) => {
     const created = createGame(config)
     setGame(reduce(created, dealForRound(created, defaultRng)))
@@ -95,6 +102,7 @@ export function useSolo() {
     hydrated,
     shielded,
     reveal: useCallback(() => setShielded(false), []),
+    conceal: useCallback(() => setShielded(true), []),
     startGame,
     submitAction,
     nextRound,

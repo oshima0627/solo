@@ -9,6 +9,7 @@ import {
   type GameState,
   type RoundResult,
 } from '@solo/engine'
+import { vibrate } from '@/lib/native'
 import { playCue, type Cue } from '@/lib/sound'
 import { HandRow } from './Cards'
 import { SoundToggle } from './SoundToggle'
@@ -76,7 +77,11 @@ export function ResultScreen({
 
   // 局が変わったときだけ鳴らす
   useEffect(() => {
-    if (result) playCue(cueFor(result))
+    if (result) {
+      const cue = cueFor(result)
+      playCue(cue)
+      void vibrate(cue === 'bomb' ? 'bomb' : 'light')
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roundNo])
 
