@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { currentPlayerId, isCpu, type GameConfig } from '@solo/engine'
 import { CpuTurnScreen } from '@/components/CpuTurnScreen'
 import { EndScreen } from '@/components/EndScreen'
@@ -10,12 +10,21 @@ import { ResultScreen } from '@/components/ResultScreen'
 import { SetupScreen } from '@/components/SetupScreen'
 import { TurnScreen } from '@/components/TurnScreen'
 import { Screen } from '@/components/ui'
+import { hideSplash, initStatusBar } from '@/lib/native'
 import { useSolo } from '@/lib/useSolo'
 
 export default function Page() {
   const solo = useSolo()
   const [setupOpen, setSetupOpen] = useState(false)
   const [resumed, setResumed] = useState(false)
+
+  useEffect(() => {
+    void initStatusBar()
+  }, [])
+
+  useEffect(() => {
+    if (solo.hydrated) void hideSplash()
+  }, [solo.hydrated])
 
   if (!solo.hydrated) {
     return (
