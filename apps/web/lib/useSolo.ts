@@ -102,6 +102,7 @@ export function useSolo() {
     hydrated,
     shielded,
     reveal: useCallback(() => setShielded(false), []),
+    conceal: useCallback(() => setShielded(true), []),
     startGame,
     submitAction,
     nextRound,
