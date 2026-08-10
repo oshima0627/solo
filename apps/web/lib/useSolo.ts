@@ -13,6 +13,7 @@ import {
   type GameState,
   type PlayerAction,
 } from '@solo/engine'
+import { appendHistory } from './history'
 import { setKeepAwake } from './native'
 import { loadSession, saveSession } from './session'
 
@@ -62,6 +63,12 @@ export function useSolo() {
     if (!hydrated) return
     void setKeepAwake(game !== null && game.phase !== 'GAME_END')
   }, [game, hydrated])
+
+  // 終局した瞬間に履歴へ1件残す。game オブジェクトは reduce の呼び出しごとにしか
+  // 作り直されないため、この effect は対局ごとに1回だけ発火する
+  useEffect(() => {
+    if (game?.phase === 'GAME_END') appendHistory(game)
+  }, [game])
 
   const startGame = useCallback((config: GameConfig) => {
     const created = createGame(config)

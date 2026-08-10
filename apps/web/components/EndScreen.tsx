@@ -11,10 +11,12 @@ export function EndScreen({
   game,
   onRestart,
   onHome,
+  onHistory,
 }: {
   game: GameState
   onRestart: () => void
   onHome: () => void
+  onHistory: () => void
 }) {
   const rows = standings(game)
 
@@ -36,6 +38,9 @@ export function EndScreen({
           <Button onClick={onRestart}>もう一度遊ぶ</Button>
           <Button variant="quiet" onClick={onHome}>
             ホームに戻る
+          </Button>
+          <Button variant="quiet" onClick={onHistory}>
+            履歴を見る
           </Button>
         </>
       }

@@ -6,6 +6,7 @@ import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { CpuTurnScreen } from '@/components/CpuTurnScreen'
 import { EndScreen } from '@/components/EndScreen'
 import { HandoffScreen } from '@/components/HandoffScreen'
+import { HistoryScreen } from '@/components/HistoryScreen'
 import { HomeScreen } from '@/components/HomeScreen'
 import { ResultScreen } from '@/components/ResultScreen'
 import { SetupScreen } from '@/components/SetupScreen'
@@ -19,6 +20,7 @@ export default function Page() {
   const [setupOpen, setSetupOpen] = useState(false)
   const [resumed, setResumed] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
+  const [historyOpen, setHistoryOpen] = useState(false)
 
   useEffect(() => {
     void initStatusBar()
@@ -32,6 +34,10 @@ export default function Page() {
     return onBackButton(() => {
       if (confirmOpen) {
         setConfirmOpen(false)
+        return true
+      }
+      if (historyOpen) {
+        setHistoryOpen(false)
         return true
       }
       if (setupOpen) {
@@ -64,7 +70,7 @@ export default function Page() {
       setConfirmOpen(true)
       return true
     })
-  }, [confirmOpen, setupOpen, resumed, solo])
+  }, [confirmOpen, historyOpen, setupOpen, resumed, solo])
 
   const confirmDialog = (
     <ConfirmDialog
@@ -97,6 +103,15 @@ export default function Page() {
     setResumed(true)
   }
 
+  if (historyOpen) {
+    return (
+      <>
+        <HistoryScreen onBack={() => setHistoryOpen(false)} />
+        {confirmDialog}
+      </>
+    )
+  }
+
   if (setupOpen) {
     return (
       <>
@@ -117,6 +132,7 @@ export default function Page() {
             solo.clearGame()
             setSetupOpen(true)
           }}
+          onHistory={() => setHistoryOpen(true)}
         />
         {confirmDialog}
       </>
@@ -159,6 +175,7 @@ export default function Page() {
               solo.clearGame()
               setResumed(false)
             }}
+            onHistory={() => setHistoryOpen(true)}
           />
         )
 

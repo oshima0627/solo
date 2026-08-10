@@ -9,10 +9,12 @@ export function HomeScreen({
   hasSaved,
   onResume,
   onNew,
+  onHistory,
 }: {
   hasSaved: boolean
   onResume: () => void
   onNew: () => void
+  onHistory: () => void
 }) {
   return (
     <Screen
@@ -34,12 +36,21 @@ export function HomeScreen({
           ) : (
             <Button onClick={onNew}>はじめる</Button>
           )}
-          <Link
-            href="/rules"
-            className="block pt-1 text-center text-sm text-ink-soft underline underline-offset-4"
-          >
-            ルールを読む
-          </Link>
+          <div className="flex justify-center gap-5 pt-1">
+            <Link
+              href="/rules"
+              className="text-center text-sm text-ink-soft underline underline-offset-4"
+            >
+              ルールを読む
+            </Link>
+            <button
+              type="button"
+              onClick={onHistory}
+              className="text-center text-sm text-ink-soft underline underline-offset-4"
+            >
+              履歴を見る
+            </button>
+          </div>
         </>
       }
     >
